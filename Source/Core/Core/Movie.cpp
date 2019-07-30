@@ -718,8 +718,8 @@ static void SetInputDisplayString(ControllerState padState, int controllerID)
 }
 
 // NOTE: CPU Thread
-static void SetWiiInputDisplayString(int remoteID, const DataReportBuilder& rpt, int ext,
-                                     const EncryptionKey& key)
+static void SetWiiInputDisplayString(int remoteID, const DataReportBuilder& rpt,
+                                     ExtensionNumber ext, const EncryptionKey& key)
 {
   int controllerID = remoteID + 4;
 
@@ -900,7 +900,7 @@ void RecordInput(const GCPadStatus* PadStatus, int controllerID)
 }
 
 // NOTE: CPU Thread
-void CheckWiimoteStatus(int wiimote, const DataReportBuilder& rpt, int ext,
+void CheckWiimoteStatus(int wiimote, const DataReportBuilder& rpt, ExtensionNumber ext,
                         const EncryptionKey& key)
 {
   SetWiiInputDisplayString(wiimote, rpt, ext, key);
@@ -1300,7 +1300,7 @@ void PlayController(GCPadStatus* PadStatus, int controllerID)
 }
 
 // NOTE: CPU Thread
-bool PlayWiimote(int wiimote, WiimoteCommon::DataReportBuilder& rpt, int ext,
+bool PlayWiimote(int wiimote, WiimoteCommon::DataReportBuilder& rpt, ExtensionNumber ext,
                  const EncryptionKey& key)
 {
   if (!IsPlayingInput() || !IsUsingWiimote(wiimote) || s_temp_input.empty())
