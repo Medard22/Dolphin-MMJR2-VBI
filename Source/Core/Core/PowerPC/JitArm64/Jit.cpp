@@ -873,9 +873,7 @@ bool JitArm64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
   js.numLoadStoreInst = 0;
   js.numFloatingPointInst = 0;
 
-  u8* const start = GetWritableCodePtr();
-  b->checkedEntry = start;
-  b->normalEntry = start;
+  b->normalEntry = GetWritableCodePtr();
 
   // Conditionally add profiling code.
   if (jo.profile_blocks)
@@ -1142,7 +1140,7 @@ bool JitArm64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
     return false;
   }
 
-  b->codeSize = (u32)(GetCodePtr() - start);
+  b->codeSize = static_cast<u32>(GetCodePtr() - b->normalEntry);
   b->originalSize = code_block.m_num_instructions;
 
   FlushIcache();
