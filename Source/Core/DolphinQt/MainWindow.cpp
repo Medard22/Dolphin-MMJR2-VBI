@@ -246,6 +246,8 @@ MainWindow::MainWindow(std::unique_ptr<BootParameters> boot_parameters,
           &MainWindow::ShowGeneralWindow);
 
 #ifdef USE_RETRO_ACHIEVEMENTS
+  connect(m_cheats_manager, &CheatsManager::OpenAchievementSettings, this,
+          &MainWindow::ShowAchievementSettings);
   connect(m_game_list, &GameList::OpenAchievementSettings, this,
           &MainWindow::ShowAchievementSettings);
 #endif  // USE_RETRO_ACHIEVEMENTS
@@ -2026,6 +2028,12 @@ void MainWindow::ShowRiivolutionBootWidget(const UICommon::GameFile& game)
   RiivolutionBootWidget w(disc.volume->GetGameID(), disc.volume->GetRevision(),
                           disc.volume->GetDiscNumber(), game.GetFilePath(), this);
   SetQWidgetWindowDecorations(&w);
+
+#ifdef USE_RETRO_ACHIEVEMENTS
+  connect(&w, &RiivolutionBootWidget::OpenAchievementSettings, this,
+          &MainWindow::ShowAchievementSettings);
+#endif  // USE_RETRO_ACHIEVEMENTS
+
   w.exec();
   if (!w.ShouldBoot())
     return;
