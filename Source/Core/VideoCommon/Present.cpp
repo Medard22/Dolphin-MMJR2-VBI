@@ -402,34 +402,24 @@ void* Presenter::GetNewSurfaceHandle()
 
 u32 Presenter::AutoIntegralScale() const
 {
-  const float efb_aspect_ratio = static_cast<float>(EFB_WIDTH) / EFB_HEIGHT;
-  const float target_aspect_ratio =
-      static_cast<float>(m_target_rectangle.GetWidth()) / m_target_rectangle.GetHeight();
-
-  u32 target_width;
-  u32 target_height;
-
-  // Adjust for black bars while handling fractional scaling
-  if (target_aspect_ratio >= efb_aspect_ratio)
-  {
-    target_height = m_target_rectangle.GetHeight() * 100;  // Account for fractional scaling
-    target_width = static_cast<u32>(
-        std::round((static_cast<float>(m_target_rectangle.GetWidth()) / target_aspect_ratio) *
-                   efb_aspect_ratio * 100));  // Account for fractional scaling
-  }
+  // Take the source resolution (XFB) and stretch it on the target aspect ratio.
+  // If the target resolution is larger (on either x or y), we scale the source
+  // by a integer multiplier until it won't have to be scaled up anymore.
+  u32 source_width = m_last_xfb_width;
+  u32 source_height = m_last_xfb_height;
+  const u32 target_width = m_target_rectangle.GetWidth();
+  const u32 target_height = m_target_rectangle.GetHeight();
+  const float source_aspect_ratio = (float)source_width / source_height;
+  const float target_aspect_ratio = (float)target_width / target_height;
+  if (source_aspect_ratio >= target_aspect_ratio)
+    source_width = std::round(source_height * target_aspect_ratio);
   else
-  {
-    target_width = m_target_rectangle.GetWidth() * 100;  // Account for fractional scaling
-    target_height = static_cast<u32>(
-        std::round((static_cast<float>(m_target_rectangle.GetHeight()) * target_aspect_ratio) /
-                   efb_aspect_ratio * 100));  // Account for fractional scaling
-  }
-
-  // Calculate a scale based on the adjusted window size with fractional scaling in mind
-  u32 width = EFB_WIDTH * target_width / m_last_xfb_width;
-  u32 height = EFB_HEIGHT * target_height / m_last_xfb_height;
-
-  return std::max((width - 1) / (EFB_WIDTH * 100) + 1, (height - 1) / (EFB_HEIGHT * 100) + 1);
+    source_height = std::round(source_width / target_aspect_ratio);
+  const u32 width_scale =
+      source_width > 0 ? ((target_width + (source_width - 1)) / source_width) : 1;
+  const u32 height_scale =
+      source_height > 0 ? ((target_height + (source_height - 1)) / source_height) : 1;
+  return std::max(width_scale, height_scale);
 }
 
 void Presenter::SetSuggestedWindowSize(int width, int height)
