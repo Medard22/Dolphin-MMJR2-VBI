@@ -1,10 +1,26 @@
 # Dolphin MMJR2 - VBI Fork
-This fork is intended mostly for personal use. My goal is to incorporate a series of pull requests from Sam Belliveau into the MMJR2 codebase that implement the VBI Skip speed hack. Dolphin team abandoned non-integer scaling a long time ago. While I completely understand their reasons, I have a hard time letting this feature go. Many Android devices with potato chipsets, like Anbernic or Retroid, can run most games at 1.5x nearly full speed. 2x resolution is usually too much for them, and framerate suffers significantly. Unfortunately, enabling non-integer scaling on the most recent codebase is way out of my league, so I'm going the other way. I want to bring the VBI Skip Hack to MMJR2. All changes to the code are handled by pull requests, credited and linked to original pull requests from Official Dolphin repository.
+Welcome 👋 The goal of this fork is to improve the MMJR2 fork of Dolphin Emulator.
 
-BEWARE: this is based on old source code! Things may break, saves may corrupt, apps may crash, and there might be no fixes in the near future! If you don't want to experiment or are new to emulation, stick with Official Dolphin!
------------------------------------------------------------------------
-Thank you Dolphin team for your amazing work. Your dedication and hard work have made it possible for people to play their favorite games on modern hardware. Keep up the great work!” 🐬👏 Thanks to the developers of the original MMJR and MMJR2 fork, and Lumince for keeping MMJR2 alive for so long.  
------------------------------------------------------------------------
+- This fork uses a separate /mmjr2-vbi folder in the root of your Internal storage.
+- Installing this fork will keep your original MMJR2 data intact.
+- In-game saves are compatible. When moving from other forks or Dolphin Official, just copy the save files to the respective folders in the /mmjr2-vbi folder.
+- For Daijishō users - this build uses "106 - gc - Dolphin mmjr" and "334 - wii - Dolphin mmjr" player settings.
+- All code ported over from Dolphin Official has links to original pull requests and respective authors. I deeply respect their work!
+- This is a personal project. Additional updates and releases are possible but not guaranteed. If you enjoy it, great! Otherwise get Official Dolphin from PlayStore.
+
+**Caution**
+- This release is incompatible with savestates from other forks (MMJR, MMJR2, Dolphin for Handheld) or Official Dolphin.
+- Savestate compatibility between releases is not guaranteed. Always check the release information!
+- This fork will replace any MMJR2 build you might have installed! If the installation fails, uninstall your MMJR2 first and try again.
+- I am not an officially registered Android developer. Google Play Protect might get suspicious and give you a warning 🤷‍♂️
+
+Special thanks
+- Dolphin Team - thank you for your amazing work 🐬👏
+- Developers of the original MMJR and MMJR2 fork
+- Lumince for keeping MMJR2 alive for so long
+
+Original old readme follows below ...
+
 # Dolphin MMJR2 Fork
 Mainly, this fork is meant for personal use. This repo's only function at the current time is to update MMJR2 to the latest Dolphin Offical Dev Source code without scoped storage changes merged.
 If you want scoped storage, go use Dolphin Official Builds. I have no use for scoped storage, nor any changes related to it. I wont be merging these changes. Have a nice day!
