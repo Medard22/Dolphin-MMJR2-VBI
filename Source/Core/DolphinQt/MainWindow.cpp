@@ -257,7 +257,7 @@ MainWindow::MainWindow(std::unique_ptr<BootParameters> boot_parameters,
   NetPlayInit();
 
 #ifdef USE_RETRO_ACHIEVEMENTS
-  AchievementManager::GetInstance()->Init();
+  AchievementManager::GetInstance().Init();
 #endif  // USE_RETRO_ACHIEVEMENTS
 
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
@@ -326,7 +326,7 @@ MainWindow::~MainWindow()
   Settings::Instance().ResetNetPlayServer();
 
 #ifdef USE_RETRO_ACHIEVEMENTS
-  AchievementManager::GetInstance()->Shutdown();
+  AchievementManager::GetInstance().Shutdown();
 #endif  // USE_RETRO_ACHIEVEMENTS
 
   delete m_render_widget;
