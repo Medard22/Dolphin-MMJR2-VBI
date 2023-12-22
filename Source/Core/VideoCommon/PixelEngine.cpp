@@ -160,9 +160,8 @@ void PixelEngineManager::RegisterMMIO(MMIO::Mapping* mmio, u32 base)
 
 void PixelEngineManager::UpdateInterrupts()
 {
-  auto& system = Core::System::GetInstance();
-  auto& processor_interface = system.GetProcessorInterface();
-  
+  auto& processor_interface = m_system.GetProcessorInterface();
+
   // check if there is a token-interrupt
   processor_interface.SetInterrupt(INT_CAUSE_PE_TOKEN,
                                    m_signal_token_interrupt && m_control.pe_token_enable);
