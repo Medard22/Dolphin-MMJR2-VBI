@@ -47,7 +47,7 @@ public final class GameDetailsDialog extends DialogFragment
     String fileSize = NativeLibrary.FormatSize(gameFile.getFileSize(), 2);
 
     // Save File Location Quoted in GameDetails
-    String gamePath = "/mmjr-revamp/GC/" + country + "\n/Card A/"/* + gameFile.getGameId()*/;
+    String gamePath = "/mmjr2-vbi/GC/" + country + "\n/Card A/"/* + gameFile.getGameId()*/;
     if(gameFile.getPlatform() > 0)
     {
       gamePath = gameFile.getWiiSavePath();

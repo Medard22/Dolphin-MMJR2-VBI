@@ -233,7 +233,7 @@ public class GamePropertiesDialog extends DialogFragment
   {
 	File externalPath = Environment.getExternalStorageDirectory();
     int count = 0;
-	String cachePath = externalPath.getAbsolutePath() + "/mmjr-revamp/cache";
+	String cachePath = externalPath.getAbsolutePath() + "/mmjr2-vbi/cache";
     File dir = new File(cachePath);
     if (dir.exists())
     {
