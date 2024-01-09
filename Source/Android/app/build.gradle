@@ -144,7 +144,7 @@ dependencies {
 
 static def getVersion()
 {
-    return '2.2.100-dev'
+    return '2.2.100'
 }
 
 def getBuildVersionCode() {
