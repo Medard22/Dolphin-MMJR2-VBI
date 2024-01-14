@@ -89,7 +89,6 @@ std::mutex s_surface_lock;
 bool s_need_nonblocking_alert_msg;
 
 Common::Flag s_is_booting;
-bool s_have_wm_user_stop = false;
 bool s_game_metadata_is_valid = false;
 }  // Anonymous namespace
 
@@ -128,7 +127,6 @@ void Host_Message(HostMessageID id)
   }
   else if (id == HostMessageID::WMUserStop)
   {
-    s_have_wm_user_stop = true;
     if (Core::IsRunning())
       Core::QueueHostJob(&Core::Stop);
   }
@@ -608,7 +606,6 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_Initialize(J
   
   WiimoteReal::InitAdapterClass();
   UICommon::Init();
-  GCAdapter::Init();
   UICommon::InitControllers(WindowSystemInfo(WindowSystemType::Android, nullptr, nullptr, nullptr));
 }
 
@@ -655,41 +652,26 @@ static void Run(JNIEnv* env, std::unique_ptr<BootParameters>&& boot, bool riivol
   s_need_nonblocking_alert_msg = true;
   std::unique_lock<std::mutex> surface_guard(s_surface_lock);
 
-  bool successful_boot = BootManager::BootCore(std::move(boot), wsi);
-  if (successful_boot)
+  if (BootManager::BootCore(std::move(boot), wsi))
   {
     ButtonManager::Init(SConfig::GetInstance().GetGameID());
 
-    static constexpr int TIMEOUT = 10000;
     static constexpr int WAIT_STEP = 25;
-    int time_waited = 0;
-    // A Core::CORE_ERROR state would be helpful here.
-    while (!Core::IsRunningAndStarted())
-    {
-      if (time_waited >= TIMEOUT || s_have_wm_user_stop)
-      {
-        successful_boot = false;
-        break;
-      }
+    while (Core::GetState() == Core::State::Starting)
 
       std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_STEP));
-      time_waited += WAIT_STEP;
-    }
   }
 
   s_is_booting.Clear();
   s_need_nonblocking_alert_msg = false;
   surface_guard.unlock();
 
-  if (successful_boot)
+  while (Core::IsRunning())
   {
-    while (Core::IsRunningAndStarted())
-    {
-      host_identity_guard.unlock();
-      s_update_main_frame_event.Wait();
-      host_identity_guard.lock();
-      Core::HostDispatchJobs();
-    }
+    host_identity_guard.unlock();
+    s_update_main_frame_event.Wait();
+    host_identity_guard.lock();
+    Core::HostDispatchJobs();
   }
 
   s_game_metadata_is_valid = false;
