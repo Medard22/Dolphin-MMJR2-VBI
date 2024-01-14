@@ -110,7 +110,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.0'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
@@ -144,7 +144,7 @@ dependencies {
 
 static def getVersion()
 {
-    return '2.2.100'
+    return '2.2.110-rc'
 }
 
 def getBuildVersionCode() {
