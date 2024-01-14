@@ -12,7 +12,7 @@ android {
         // compileSdkVersion 33
         compileSdk 33
     }
-    
+
     ndkVersion "25.1.8937393"
 
     viewBinding.enabled = true
@@ -144,7 +144,7 @@ dependencies {
 
 static def getVersion()
 {
-    return '2.2.110-rc'
+    return '2.2.110'
 }
 
 def getBuildVersionCode() {
