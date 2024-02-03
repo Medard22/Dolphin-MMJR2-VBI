@@ -25,12 +25,7 @@ u64 GetTickCountStd()
   using namespace std::chrono;
   return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
 }
-}  // namespace
 
-namespace ExpansionInterface
-{
-namespace
-{
 std::vector<u8> BuildFINFrame(StackRef* ref)
 {
   const Common::TCPPacket result(ref->bba_mac, ref->my_mac, ref->from, ref->to, ref->seq_num,
@@ -69,6 +64,8 @@ void SetIPIdentification(u8* ptr, std::size_t size, u16 value)
 }
 }  // namespace
 
+namespace ExpansionInterface
+{
 bool CEXIETHERNET::BuiltInBBAInterface::Activate()
 {
   if (IsActivated())
