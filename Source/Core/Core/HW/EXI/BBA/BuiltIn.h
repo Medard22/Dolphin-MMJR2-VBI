@@ -75,7 +75,7 @@ public:
 
 struct StackRef
 {
-  u32 ip;
+  u32 ip = 0;
   u16 local;
   u16 remote;
   u16 type;
@@ -109,6 +109,8 @@ public:
   auto begin() const { return m_stacks.cbegin(); }
   auto end() { return m_stacks.end(); }
   auto end() const { return m_stacks.cend(); }
+
+  void Clear();
 
 private:
   StackRefs m_stacks;
