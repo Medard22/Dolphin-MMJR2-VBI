@@ -541,6 +541,14 @@ public final class NativeLibrary
   public static native void setNativeTheme(String theme);
 
   @Keep
+  public static void displayToastMsg(final String text, final boolean long_length)
+  {
+    final int length = long_length ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+    new Handler(Looper.getMainLooper())
+            .post(() -> Toast.makeText(DolphinApplication.getAppContext(), text, length).show());
+  }
+
+  @Keep
   public static boolean displayAlertMsg(final String caption, final String text,
           final boolean yesNo, final boolean isWarning, final boolean nonBlocking)
   {
@@ -552,9 +560,7 @@ public final class NativeLibrary
     // and are allowed to block. As a fallback, we can use toasts.
     if (emulationActivity == null || nonBlocking)
     {
-      new Handler(Looper.getMainLooper()).post(
-              () -> Toast.makeText(DolphinApplication.getAppContext(), text, Toast.LENGTH_LONG)
-                      .show());
+      displayToastMsg(text, true);
     }
     else
     {
