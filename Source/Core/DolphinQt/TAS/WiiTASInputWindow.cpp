@@ -28,6 +28,7 @@
 
 #include "Core/HW/WiimoteEmu/Camera.h"
 #include "Core/HW/WiimoteReal/WiimoteReal.h"
+#include "Core/System.h"
 
 #include "DolphinQt/QtUtils/AspectRatioWidget.h"
 #include "DolphinQt/QtUtils/QueueOnObject.h"
@@ -249,7 +250,7 @@ WiiTASInputWindow::WiiTASInputWindow(QWidget* parent, int num) : TASInputWindow(
   setLayout(layout);
 
   u8 ext = 0;
-  if (Core::IsRunning())
+  if (Core::IsRunning(Core::System::GetInstance()))
   {
     ext = static_cast<WiimoteEmu::Wiimote*>(Wiimote::GetConfig()->GetController(num))
               ->GetActiveExtensionNumber();
