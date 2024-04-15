@@ -192,7 +192,6 @@ public:
 
   bool IsSimpleValue() const { return m_input.GetExpression().empty(); }
 
-private:
   void SetValue(ValueType value)
   {
     m_value = value;
@@ -201,6 +200,7 @@ private:
     m_input.SetExpression("");
   }
 
+private:
   // Values are R/W by both UI and CPU threads.
   mutable std::atomic<ValueType> m_value = {};
 

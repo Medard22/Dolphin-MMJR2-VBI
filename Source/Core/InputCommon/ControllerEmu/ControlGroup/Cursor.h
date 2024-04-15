@@ -39,6 +39,8 @@ public:
   // Vertical offset in meters.
   ControlState GetVerticalOffset() const;
 
+  void SetRelativeInput(bool enabled);
+
 private:
   // This is used to reduce the cursor speed for relative input
   // to something that makes sense with the default range.
