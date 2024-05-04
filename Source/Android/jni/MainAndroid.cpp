@@ -270,13 +270,13 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_UnPauseEmula
                                                                                      jclass)
 {
   HostThreadLock guard;
-  Core::SetState(Core::State::Running);
+  Core::SetState(Core::System::GetInstance(), Core::State::Running);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_PauseEmulation(JNIEnv*, jclass)
 {
   HostThreadLock guard;
-  Core::SetState(Core::State::Paused);
+  Core::SetState(Core::System::GetInstance(), Core::State::Paused);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_StopEmulation(JNIEnv*, jclass)
@@ -515,7 +515,7 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SurfaceDestr
     }
 
     if (Core::GetState(Core::System::GetInstance()) == Core::State::Running)
-      Core::SetState(Core::State::Paused);
+      Core::SetState(Core::System::GetInstance(), Core::State::Paused);
   }
 
   std::lock_guard surface_guard(s_surface_lock);
