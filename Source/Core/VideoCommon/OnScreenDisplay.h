@@ -10,6 +10,8 @@
 
 #include "Common/CommonTypes.h"
 
+#include "VideoCommon/Assets/CustomTextureData.h"
+
 namespace OSD
 {
 enum class MessageType
@@ -38,18 +40,12 @@ constexpr u32 NORMAL = 5000;
 constexpr u32 VERY_LONG = 10000;
 };  // namespace Duration
 
-struct Icon
-{
-  std::vector<u8> rgba_data;
-  u32 width = 0;
-  u32 height = 0;
-};  // struct Icon
-
-// On-screen message display (colored Fuchsia by default)
+// On-screen message display (colored fuchsia by default)
 void AddMessage(std::string message, u32 ms = Duration::SHORT, u32 argb = Color::FUCHSIA,
-                std::unique_ptr<Icon> icon = nullptr);
+                const VideoCommon::CustomTextureData::ArraySlice::Level* icon = nullptr);
 void AddTypedMessage(MessageType type, std::string message, u32 ms = Duration::SHORT,
-                     u32 argb = Color::FUCHSIA, std::unique_ptr<Icon> icon = nullptr);
+                     u32 argb = Color::FUCHSIA,
+                     const VideoCommon::CustomTextureData::ArraySlice::Level* icon = nullptr);
 
 // Draw the current messages on the screen. Only call once per frame.
 void DrawMessages();
