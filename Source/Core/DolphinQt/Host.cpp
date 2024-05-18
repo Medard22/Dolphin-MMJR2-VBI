@@ -235,6 +235,9 @@ void Host_YieldToUI()
 
 void Host_UpdateDisasmDialog()
 {
+  if (Settings::Instance().GetIsContinuouslyFrameStepping())
+    return;
+
   QueueOnObject(QApplication::instance(), [] { emit Host::GetInstance()->UpdateDisasmDialog(); });
 }
 
