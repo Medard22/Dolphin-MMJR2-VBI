@@ -132,8 +132,6 @@ void DeclareAsCPUThread();
 void UndeclareAsCPUThread();
 void DeclareAsGPUThread();
 void UndeclareAsGPUThread();
-void DeclareAsHostThread();
-void UndeclareAsHostThread();
 
 std::string StopMessage(bool main_thread, std::string_view message);
 
@@ -142,7 +140,6 @@ bool IsRunningAndStarted();       // is running and the CPU loop has been entere
 bool IsRunningInCurrentThread();  // this tells us whether we are running in the CPU thread.
 bool IsCPUThread();               // this tells us whether we are the CPU thread.
 bool IsGPUThread();
-bool IsHostThread();
 
 bool WantsDeterminism();
 

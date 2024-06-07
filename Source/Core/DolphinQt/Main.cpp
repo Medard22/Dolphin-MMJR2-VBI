@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
   }
 #endif
 
-  Core::DeclareAsHostThread();
+  Host::GetInstance()->DeclareAsHostThread();
 
 #ifdef __APPLE__
   // On macOS, a command line option matching the format "-psn_X_XXXXXX" is passed when

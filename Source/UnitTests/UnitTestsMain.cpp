@@ -6,7 +6,6 @@
 #include <fmt/format.h>
 
 #include "Common/MsgHandler.h"
-#include "Core/Core.h"
 
 #include "gtest/gtest.h"
 
@@ -25,7 +24,6 @@ int main(int argc, char** argv)
 {
   fmt::print(stderr, "Running main() from UnitTestsMain.cpp\n");
   Common::RegisterMsgAlertHandler(TestMsgHandler);
-  Core::DeclareAsHostThread();
 
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
