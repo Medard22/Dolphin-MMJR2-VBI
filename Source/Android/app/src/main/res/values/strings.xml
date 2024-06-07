@@ -184,8 +184,9 @@ Without the correct bios file, the app may crash due to a bug that I can not fix
     <string name="analytics_desc">If authorized, Dolphin can collect data on its performance, feature usage, and configuration, as well as data on your system\'s hardware and operating system.\n\nNo private data is ever collected. This data helps us understand how people and emulated games use Dolphin and prioritize our efforts. It also helps us identify rare configurations that are causing bugs, performance and stability issues. This authorization can be revoked at any time through Dolphin\'s settings.</string>
     <string name="analytics_new_id">Generate a New Statistics Identity</string>
     <string name="analytics_new_id_confirmation">Are you sure you want to generate a new statistics identity?</string>
-    <string name="gametdb_thanks">Special thanks to Weihuoya + Dolphin Team for getting this emulator to where it is today.</string>
-    <string name="dev_thanks">Dolphin |MMJR2| made by bankaimaster999, sspacelynx and Lumince.</string>
+    <string name="gametdb_thanks">Special thanks to Dolphin Team, Weihuoya, bankaimaster999, sspacelynx and Lumince.</string>
+    <string name="dev_thanks">Dolphin MMJR2 VBI maintained by Medard22.\nThis build is roughly equal to Dolphin 5.0–19582</string>
+
 
     <!-- SerialPort1 Subsetting Fragment -->
     <string name="serialport1_submenu">Serial Port 1</string>
