@@ -68,7 +68,6 @@
 #include "jni/AndroidCommon/IDCache.h"
 #include "jni/AndroidCommon/AndroidHotkey.h"
 #include "jni/AndroidCommon/AndroidTheme.h"
-#include "jni/Host.h"
 
 namespace
 {
@@ -79,6 +78,25 @@ constexpr char LABEL[] = "Dolphin |MMJR2|";
 
 ANativeWindow* s_surf;
 
+// The Core only supports using a single Host thread.
+// If multiple threads want to call host functions then they need to queue
+// sequentially for access.
+std::mutex s_host_identity_lock;
+template <typename T>
+struct HostThreadWrapper
+{
+  T lock;
+
+  explicit HostThreadWrapper(auto&&... args) : lock(std::forward<decltype(args)>(args)...)
+  {
+    Core::DeclareAsHostThread();
+  }
+  HostThreadWrapper(const HostThreadWrapper& other) = delete;
+  HostThreadWrapper(HostThreadWrapper&& other) = delete;
+  HostThreadWrapper& operator=(const HostThreadWrapper& other) = delete;
+  HostThreadWrapper& operator=(HostThreadWrapper&& other) = delete;
+  ~HostThreadWrapper() { Core::UndeclareAsHostThread(); }
+};
 Common::Event s_update_main_frame_event;
 
 // This exists to prevent surfaces from being destroyed during the boot process,
@@ -268,19 +286,19 @@ JNIEXPORT jboolean JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_CheckInt
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_UnPauseEmulation(JNIEnv*,
                                                                                      jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   Core::SetState(Core::State::Running);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_PauseEmulation(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   Core::SetState(Core::State::Paused);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_StopEmulation(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   Core::Stop();
 
   // Kick the waiting event
@@ -360,7 +378,7 @@ JNIEXPORT jstring JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_GetGitRev
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SaveScreenShot(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   Core::SaveScreenShot();
 }
 
@@ -374,7 +392,7 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SaveState(JN
                                                                               jint slot,
                                                                               jboolean wait)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   State::Save(slot, wait);
 }
 
@@ -382,21 +400,21 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SaveStateAs(
                                                                                 jstring path,
                                                                                 jboolean wait)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   State::SaveAs(GetJString(env, path), wait);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_LoadState(JNIEnv*, jclass,
                                                                               jint slot)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   State::Load(slot);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_LoadStateAs(JNIEnv* env, jclass,
                                                                                 jstring path)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   State::LoadAs(GetJString(env, path));
 }
 
@@ -422,7 +440,7 @@ Java_org_dolphinemu_dolphinemu_utils_DirectoryInitialization_CreateUserDirectori
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SetUserDirectory(
     JNIEnv* env, jclass, jstring jDirectory)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   UICommon::SetUserDirectory(GetJString(env, jDirectory));
 }
 
@@ -451,7 +469,7 @@ JNIEXPORT jint JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_GetMaxLogLev
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SetProfiling(JNIEnv*, jclass,
                                                                                  jboolean enable)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   Core::SetState(Core::State::Paused);
   auto& jit_interface = Core::System::GetInstance().GetJitInterface();
   jit_interface.ClearCache();
@@ -463,7 +481,7 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SetProfiling
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_WriteProfileResults(JNIEnv*,
                                                                                         jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   std::string filename = File::GetUserPath(D_DUMP_IDX) + "Debug/profiler.txt";
   File::CreateFullPath(filename);
   auto& jit_interface = Core::System::GetInstance().GetJitInterface();
@@ -492,14 +510,14 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SurfaceDestr
     // If emulation continues running without a valid surface, we will probably crash,
     // so pause emulation until we get a valid surface again. EmulationFragment handles resuming.
 
-    HostThreadLock host_identity_guard;
+    HostThreadWrapper<std::unique_lock<std::mutex>> host_identity_guard(s_host_identity_lock);
 
     while (s_is_booting.IsSet())
     {
       // Need to wait for boot to finish before we can pause
-      host_identity_guard.Unlock();
+      host_identity_guard.lock.unlock();
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      host_identity_guard.Lock();
+      host_identity_guard.lock.lock();
     }
 
     if (Core::GetState() == Core::State::Running)
@@ -562,7 +580,7 @@ JNIEXPORT jfloat JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_GetGameAsp
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_RefreshWiimotes(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
+  HostThreadWrapper<std::lock_guard<std::mutex>> guard(s_host_identity_lock);
   WiimoteReal::Refresh();
 }
 
@@ -574,14 +592,12 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_ReloadWiimot
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_ReloadConfig(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
   SConfig::GetInstance().LoadSettings();
 }
 
 JNIEXPORT void JNICALL
 Java_org_dolphinemu_dolphinemu_NativeLibrary_UpdateGCAdapterScanThread(JNIEnv*, jclass)
 {
-  HostThreadLock guard;
   if (GCAdapter::UseAdapter())
   {
     GCAdapter::StartScanThread();
@@ -594,9 +610,6 @@ Java_org_dolphinemu_dolphinemu_NativeLibrary_UpdateGCAdapterScanThread(JNIEnv*, 
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_Initialize(JNIEnv*, jclass)
 {
-  // InitControllers ends up calling config code, and some config callbacks use RunAsCPUThread
-  HostThreadLock guard;
-  
   Common::RegisterMsgAlertHandler(&MsgAlert);
   Common::AndroidSetReportHandler(&ReportSend);
   DolphinAnalytics::AndroidSetGetValFunc(&GetAnalyticValue);
@@ -630,7 +643,7 @@ static float GetRenderSurfaceScale(JNIEnv* env)
 
 static void Run(JNIEnv* env, std::unique_ptr<BootParameters>&& boot, bool riivolution)
 {
-  HostThreadLock host_identity_guard;
+  HostThreadWrapper<std::unique_lock<std::mutex>> host_identity_guard(s_host_identity_lock);
 
   if (riivolution && std::holds_alternative<BootParameters::Disc>(boot->parameters))
   {
@@ -664,16 +677,16 @@ static void Run(JNIEnv* env, std::unique_ptr<BootParameters>&& boot, bool riivol
 
   while (Core::IsRunning())
   {
-    host_identity_guard.Unlock();
+    host_identity_guard.lock.unlock();
     s_update_main_frame_event.Wait();
-    host_identity_guard.Lock();
+    host_identity_guard.lock.lock();
     Core::HostDispatchJobs();
   }
 
   s_game_metadata_is_valid = false;
   Core::Shutdown();
   ButtonManager::Shutdown();
-  host_identity_guard.Unlock();
+  host_identity_guard.lock.unlock();
 
   env->CallStaticVoidMethod(IDCache::GetNativeLibraryClass(),
                             IDCache::GetFinishEmulationActivity());
@@ -714,7 +727,6 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_RunSystemMen
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_ChangeDisc(JNIEnv* env, jclass,
                                                                                jstring jFile)
 {
-  HostThreadLock guard;
   const std::string path = GetJString(env, jFile);
   __android_log_print(ANDROID_LOG_INFO, DOLPHIN_TAG, "Change Disc: %s", path.c_str());
   Core::RunAsCPUThread([&path] { Core::System::GetInstance().GetDVDInterface().ChangeDisc(path); });

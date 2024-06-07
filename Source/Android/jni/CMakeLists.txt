@@ -10,8 +10,6 @@ add_library(main SHARED
   GameList/GameFile.cpp
   GameList/GameFile.h
   GameList/GameFileCache.cpp
-  Host.cpp
-  Host.h
   IniFile.cpp
   MainAndroid.cpp
   RiivolutionPatches.cpp
