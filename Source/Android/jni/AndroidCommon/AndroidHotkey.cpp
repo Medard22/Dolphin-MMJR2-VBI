@@ -28,10 +28,14 @@ bool onHotkeyEvent(int id, bool showMessage)
             SHOW_MESSAGE(StringFromFormat("Store EFB Copies to Texture: %s", newValue ? "ON" : "OFF"))
             break;
         case Hotkey::HK_TOGGLE_FAST_FORWARD:
-            newValue = !Config::Get(Config::MAIN_FAST_FORWARD_HOTKEY);
-            Config::SetCurrent(Config::MAIN_FAST_FORWARD_HOTKEY, newValue);
-            SHOW_MESSAGE(StringFromFormat("Fast Forward: %s", newValue ? "ON" : "OFF"))
-            break;
+            {
+                float currentSpeed = Config::Get(Config::MAIN_EMULATION_SPEED);
+                float newSpeed = (currentSpeed == 1.0f) ? 2.0f : 1.0f;
+                Config::SetCurrent(Config::MAIN_EMULATION_SPEED, newSpeed);
+                SHOW_MESSAGE(StringFromFormat("Emulation Speed: %s", (newSpeed == 2.0f) ? "200%" : "100%"))
+                newValue = (newSpeed == 2.0f);
+                break;
+            }
         default:
             return false;
     }
@@ -47,7 +51,7 @@ bool getHotkeyState(int id) {
         case Hotkey::HK_TOGGLE_EFBCOPIES:
             return Config::Get(Config::GFX_HACK_SKIP_EFB_COPY_TO_RAM);
         case Hotkey::HK_TOGGLE_FAST_FORWARD:
-            return Config::Get(Config::MAIN_FAST_FORWARD_HOTKEY);
+            return Config::Get(Config::MAIN_EMULATION_SPEED) == 2.0f;
         default:
             return false;
     }
