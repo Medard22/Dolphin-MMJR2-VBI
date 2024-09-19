@@ -62,6 +62,8 @@ public enum IntSetting implements AbstractIntSetting
 
   GFX_ENHANCE_MAX_ANISOTROPY(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS, "MaxAnisotropy",
           0),
+  GFX_ENHANCE_OUTPUT_RESAMPLING(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS, "OutputResampling",
+          0),
 
   GFX_STEREO_MODE(Settings.FILE_GFX, Settings.SECTION_STEREOSCOPY, "StereoMode", 0),
   GFX_STEREO_DEPTH(Settings.FILE_GFX, Settings.SECTION_STEREOSCOPY, "StereoDepth", 0),

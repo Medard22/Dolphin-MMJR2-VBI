@@ -705,6 +705,10 @@ public final class SettingsFragmentPresenter
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_ENHANCE_FORCE_TEXTURE_FILTERING,
             R.string.texture_filtering, R.string.texture_filtering_description,
             R.array.textureFilteringEntries, R.array.textureFilteringValues));
+            
+    sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_ENHANCE_OUTPUT_RESAMPLING,
+            R.string.output_resampling, R.string.output_resampling_description,
+            R.array.outputResampleEntries, R.array.outputResampleValues));
 
     int stereoModeValue = IntSetting.GFX_STEREO_MODE.getInt(mSettings);
     final int anaglyphMode = 3;

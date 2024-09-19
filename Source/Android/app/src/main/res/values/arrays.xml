@@ -349,6 +349,27 @@
         <item>3</item>
     </integer-array>
 
+    <!-- Output Resampling Preference -->
+    <string-array name="outputResampleEntries" translatable="false">
+        <item>Default</item>
+        <item>Billnear</item>
+        <item>Bicubic: B-Spline</item>
+        <item>Bicubic: Mitchell-Netravali</item>
+        <item>Bicubic: Catmull-Rom</item>
+        <item>Sharp Bilinear</item>
+        <item>Area Sampling</item>
+    </string-array>
+    <integer-array name="outputResampleValues" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </integer-array>
+
     <string-array name="countryNames">
         <item>Europe</item>
         <item>Japan</item>

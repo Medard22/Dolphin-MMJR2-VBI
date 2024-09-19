@@ -283,6 +283,8 @@ Without the correct bios file, the app may crash due to a bug that I can not fix
     <string name="anisotropic_filtering_description">Enhances visual quality of textures that are at oblique viewing angles. Might cause issues in a small number of games.</string>
     <string name="texture_filtering">Texture Filtering</string>
     <string name="texture_filtering_description">Overrides the texture scaling filter selected by the game. Any option except \'Default\' will alter the look of the game\'s textures and might cause issues in a small number of games.</string>
+    <string name="output_resampling">Output Resampling</string>
+    <string name="output_resampling_description">Affects how the game output is scaled to the window resolution. If unsure, select \'Default\'.</string>
     <string name="post_processing_shader">Post-Processing Effect</string>
     <string name="post_processing_shader_description">Apply a post-processing effect after finishing a frame</string>
     <string name="postprocessing_shader">Post Processing Shader</string>
