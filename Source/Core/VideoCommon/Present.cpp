@@ -367,10 +367,34 @@ void* Presenter::GetNewSurfaceHandle()
 
 u32 Presenter::AutoIntegralScale() const
 {
-  // Calculate a scale based on the window size
-  u32 width = EFB_WIDTH * m_target_rectangle.GetWidth() * 100 / m_last_xfb_width;
-  u32 height = EFB_HEIGHT * m_target_rectangle.GetHeight() * 100 / m_last_xfb_height;
-  return std::max((width - 1) / EFB_WIDTH + 1, (height - 1) / EFB_HEIGHT + 1);
+  const float efb_aspect_ratio = static_cast<float>(EFB_WIDTH) / EFB_HEIGHT;
+  const float target_aspect_ratio =
+      static_cast<float>(m_target_rectangle.GetWidth()) / m_target_rectangle.GetHeight();
+
+  u32 target_width;
+  u32 target_height;
+
+  // Adjust for black bars while handling fractional scaling
+  if (target_aspect_ratio >= efb_aspect_ratio)
+  {
+    target_height = m_target_rectangle.GetHeight() * 100;  // Account for fractional scaling
+    target_width = static_cast<u32>(
+        std::round((static_cast<float>(m_target_rectangle.GetWidth()) / target_aspect_ratio) *
+                   efb_aspect_ratio * 100));  // Account for fractional scaling
+  }
+  else
+  {
+    target_width = m_target_rectangle.GetWidth() * 100;  // Account for fractional scaling
+    target_height = static_cast<u32>(
+        std::round((static_cast<float>(m_target_rectangle.GetHeight()) * target_aspect_ratio) /
+                   efb_aspect_ratio * 100));  // Account for fractional scaling
+  }
+
+  // Calculate a scale based on the adjusted window size with fractional scaling in mind
+  u32 width = EFB_WIDTH * target_width / m_last_xfb_width;
+  u32 height = EFB_HEIGHT * target_height / m_last_xfb_height;
+
+  return std::max((width - 1) / (EFB_WIDTH * 100) + 1, (height - 1) / (EFB_HEIGHT * 100) + 1);
 }
 
 void Presenter::SetWindowSize(int width, int height)
