@@ -19,6 +19,7 @@ public enum MenuTag
   CONFIG_LOG("config_log"),
   DEBUG("debug"),
   GRAPHICS("graphics"),
+  COLOR_CORRECTION("color_correction"),
   ENHANCEMENTS("enhancements"),
   CUSTOM_TEXTURES("custom_textures"),
   STEREOSCOPY("stereoscopy"),

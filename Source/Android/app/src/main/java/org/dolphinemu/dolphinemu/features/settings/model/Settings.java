@@ -38,6 +38,7 @@ public class Settings implements Closeable
   public static final String SECTION_LOGGER_OPTIONS = "Options";
 
   public static final String SECTION_GFX_SETTINGS = "Settings";
+  public static final String SECTION_GFX_COLOR_CORRECTION = "ColorCorrection";
   public static final String SECTION_GFX_ENHANCEMENTS = "Enhancements";
   public static final String SECTION_GFX_HACKS = "Hacks";
 

@@ -196,6 +196,10 @@ public final class SettingsFragmentPresenter
         addWiimoteSettings(sl);
         break;
 
+      case COLOR_CORRECTION:
+        addColorCorrectionSettings(sl);
+        break;
+      
       case ENHANCEMENTS:
         addEnhanceSettings(sl);
         break;
@@ -670,8 +674,7 @@ public final class SettingsFragmentPresenter
             R.string.show_graphs_description));
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_SHOW_SPEED, R.string.show_speed,
             R.string.show_speed_description));
-    sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_SHOW_SPEED_COLORS,
-            R.string.show_speed_colors,
+    sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_SHOW_SPEED_COLORS, R.string.show_speed_colors,
             R.string.show_speed_colors_description));
     sl.add(new SingleChoiceSettingDynamicDescriptions(mContext,
             IntSetting.GFX_SHADER_COMPILATION_MODE, R.string.shader_compilation_mode, 0,
@@ -685,10 +688,19 @@ public final class SettingsFragmentPresenter
     sl.add(new PercentSliderSetting(mContext, FloatSetting.GFX_DISPLAY_SCALE, R.string.setting_display_scale,
             0, 0, 200, "%"));
 
+    sl.add(new SubmenuSetting(mContext, R.string.color_correction_submenu, MenuTag.COLOR_CORRECTION));
     sl.add(new SubmenuSetting(mContext, R.string.enhancements_submenu, MenuTag.ENHANCEMENTS));
     sl.add(new SubmenuSetting(mContext, R.string.hacks_submenu, MenuTag.HACKS));
     sl.add(new SubmenuSetting(mContext, R.string.advanced_graphics_submenu,
             MenuTag.ADVANCED_GRAPHICS));
+  }
+
+  private void addColorCorrectionSettings(ArrayList<SettingsItem> sl)
+  {
+    sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_CC_CORRECT_COLOR_SPACE,
+            R.string.correct_color_space, R.string.correct_color_space_description));
+    sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_CC_GAME_COLOR_SPACE, R.string.game_color_space, 0,
+            R.array.colorSpaceEntries, R.array.colorSpaceValues));
   }
 
   private void addEnhanceSettings(ArrayList<SettingsItem> sl)

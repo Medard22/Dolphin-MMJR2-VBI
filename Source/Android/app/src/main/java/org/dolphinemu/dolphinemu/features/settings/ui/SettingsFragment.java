@@ -49,7 +49,8 @@ public final class SettingsFragment extends Fragment implements SettingsFragment
     titles.put(MenuTag.CONFIG_WII, R.string.wii_submenu);
     titles.put(MenuTag.CONFIG_ADVANCED, R.string.advanced_submenu);
     titles.put(MenuTag.DEBUG, R.string.debug_submenu);
-	titles.put(MenuTag.GRAPHICS, R.string.graphics_settings);
+    titles.put(MenuTag.GRAPHICS, R.string.graphics_settings);
+    titles.put(MenuTag.COLOR_CORRECTION, R.string.color_correction_submenu);
     titles.put(MenuTag.ENHANCEMENTS, R.string.enhancements_submenu);
     titles.put(MenuTag.STEREOSCOPY, R.string.stereoscopy_submenu);
     titles.put(MenuTag.HACKS, R.string.hacks_submenu);

@@ -673,6 +673,17 @@
         <item>22</item>
     </integer-array>
 
+    <string-array name="colorSpaceEntries">
+        <item>@string/ntscm_space</item>
+        <item>@string/ntscj_space</item>
+        <item>@string/pal_space</item>
+    </string-array>
+    <integer-array name="colorSpaceValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </integer-array>
+
     <!-- Application Theme -->
     <string-array name="themeEntries">
         <item>MMJR2 Purple</item>
