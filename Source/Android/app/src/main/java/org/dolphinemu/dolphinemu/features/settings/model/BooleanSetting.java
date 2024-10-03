@@ -233,6 +233,10 @@ public enum BooleanSetting implements AbstractBooleanSetting
           "DisableCopyFilter", false),
   GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS,
           "ArbitraryMipmapDetection", false),
+  GFX_CC_CORRECT_COLOR_SPACE(Settings.FILE_GFX, Settings.SECTION_GFX_COLOR_CORRECTION,
+          "CorrectColorSpace", false),
+  GFX_CC_CORRECT_GAMMA(Settings.FILE_GFX, Settings.SECTION_GFX_COLOR_CORRECTION,
+          "CorrectGamma", false),
 
   GFX_STEREO_SWAP_EYES(Settings.FILE_GFX, Settings.SECTION_STEREOSCOPY, "StereoSwapEyes", false),
 

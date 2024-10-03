@@ -60,8 +60,10 @@ public enum IntSetting implements AbstractIntSetting
   GFX_ENHANCE_FORCE_TEXTURE_FILTERING(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS,
           "ForceTextureFiltering", 0),
 
-  GFX_ENHANCE_MAX_ANISOTROPY(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS, "MaxAnisotropy",
-          0),
+  GFX_ENHANCE_MAX_ANISOTROPY(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS,
+          "MaxAnisotropy", 0),
+  GFX_CC_GAME_COLOR_SPACE(Settings.FILE_GFX, Settings.SECTION_GFX_COLOR_CORRECTION,
+          "GameColorSpace", 0),
 
   GFX_STEREO_MODE(Settings.FILE_GFX, Settings.SECTION_STEREOSCOPY, "StereoMode", 0),
   GFX_STEREO_DEPTH(Settings.FILE_GFX, Settings.SECTION_STEREOSCOPY, "StereoDepth", 0),
