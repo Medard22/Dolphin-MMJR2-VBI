@@ -167,10 +167,11 @@ void ShaderCache::WaitForAsyncCompiler()
   constexpr auto update_ui_progress = [](size_t completed, size_t total) {
     const float center_x = ImGui::GetIO().DisplaySize.x * 0.5f;
     const float center_y = ImGui::GetIO().DisplaySize.y * 0.5f;
+    const float offset_y = 100.0f;
     const float scale = ImGui::GetIO().DisplayFramebufferScale.x;
 
     ImGui::SetNextWindowSize(ImVec2(400.0f * scale, 50.0f * scale), ImGuiCond_Always);
-    ImGui::SetNextWindowPos(ImVec2(center_x, center_y), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(ImVec2(center_x, center_y + offset_y), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
     if (ImGui::Begin(Common::GetStringT("Compiling Shaders").c_str(), nullptr,
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs |
                          ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
