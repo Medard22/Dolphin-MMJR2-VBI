@@ -879,6 +879,8 @@ public final class SettingsFragmentPresenter
     sl.add(new HeaderSetting(mContext, R.string.debug_warning, 0));
     sl.add(new InvertedCheckBoxSetting(mContext, BooleanSetting.MAIN_FASTMEM,
             R.string.debug_fastmem, 0));
+    sl.add(new InvertedCheckBoxSetting(mContext, BooleanSetting.MAIN_FASTMEM_ARENA,
+            R.string.debug_fastmem_arena, 0));
 
     sl.add(new HeaderSetting(mContext, R.string.debug_jit_header, 0));
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_DEBUG_JIT_OFF, R.string.debug_jitoff,
