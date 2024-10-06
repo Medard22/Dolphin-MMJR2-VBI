@@ -13,7 +13,6 @@
 #include "Common/BitUtils.h"
 #include "Common/Logging/Log.h"
 #include "Common/MsgHandler.h"
-#include "Common/Network.h"
 #include "Common/ScopeGuard.h"
 #include "Core/HW/EXI/EXI_Device.h"
 #include "Core/HW/EXI/EXI_DeviceEthernet.h"
@@ -747,7 +746,7 @@ void CEXIETHERNET::BuiltInBBAInterface::ReadThreadHandler(CEXIETHERNET::BuiltInB
       u8* buffer = reinterpret_cast<u8*>(self->m_eth_ref->mRecvBuffer.get());
       Common::PacketView packet(buffer, datasize);
       const auto packet_type = packet.GetEtherType();
-      if (packet_type.has_value() && packet_type == Common::IPV4_ETHERTYPE)
+      if (packet_type.has_value() && packet_type == IP_PROTOCOL)
       {
         SetIPIdentification(buffer, datasize, ++self->m_ip_frame_id);
       }
