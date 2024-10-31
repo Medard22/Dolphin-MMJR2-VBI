@@ -1339,32 +1339,4 @@ Type NormalizeSkylanderType(Type type)
   }
 }
 
-Skylander* SkylanderPortal::GetSkylander(u8 slot)
-{
-  return &skylanders[slot];
-}
-
-Type NormalizeSkylanderType(Type type)
-{
-  switch (type)
-  {
-  case Type::Skylander:
-  case Type::Giant:
-  case Type::Swapper:
-  case Type::TrapMaster:
-  case Type::Mini:
-    return Type::Skylander;
-  case Type::Trophy:
-    return Type::Trophy;
-  default:
-  case Type::Item:
-  case Type::Trap:
-  case Type::Vehicle:
-  case Type::Unknown:
-    // until these get seperate data logic (except unknown and item since items don't save data and
-    // unknown is unknown)
-    return Type::Unknown;
-  }
-}
-
 }  // namespace IOS::HLE::USB
