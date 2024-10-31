@@ -14,6 +14,7 @@ public enum BooleanSetting implements AbstractBooleanSetting
 
   MAIN_DSP_HLE(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "DSPHLE", true),
   MAIN_FASTMEM(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "Fastmem", true),
+  MAIN_FASTMEM_ARENA(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "FastmemArena", true),
   MAIN_CPU_THREAD(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "CPUThread", true),
   MAIN_SYNC_ON_SKIP_IDLE(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "SyncOnSkipIdle", true),
   MAIN_ENABLE_CHEATS(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "EnableCheats", false),
@@ -268,9 +269,11 @@ public enum BooleanSetting implements AbstractBooleanSetting
 
   private static final BooleanSetting[] NOT_RUNTIME_EDITABLE_ARRAY = new BooleanSetting[]{
           MAIN_DSP_HLE,
+          MAIN_FASTMEM_ARENA,
           MAIN_CPU_THREAD,
-		  MAIN_ENABLE_CHEATS,
+          MAIN_ENABLE_CHEATS,
           MAIN_OVERRIDE_REGION_SETTINGS,
+          MAIN_MMU,
           MAIN_DSP_JIT
   };
 
