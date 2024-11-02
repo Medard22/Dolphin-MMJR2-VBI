@@ -96,8 +96,8 @@ QGroupBox* TASInputWindow::CreateStickInputs(QString name, QSpinBox*& x_value, Q
   visual->SetX(x_default);
   visual->SetY(y_default);
 
-  connect(x_value, qOverload<int>(&QSpinBox::valueChanged), visual, &StickWidget::SetX);
-  connect(y_value, qOverload<int>(&QSpinBox::valueChanged), visual, &StickWidget::SetY);
+  connect(x_value, &QSpinBox::valueChanged, visual, &StickWidget::SetX);
+  connect(y_value, &QSpinBox::valueChanged, visual, &StickWidget::SetY);
   connect(visual, &StickWidget::ChangedX, x_value, &QSpinBox::setValue);
   connect(visual, &StickWidget::ChangedY, y_value, &QSpinBox::setValue);
 
@@ -143,7 +143,7 @@ QSpinBox* TASInputWindow::CreateSliderValuePair(QBoxLayout* layout, int default_
   auto* value = new QSpinBox();
   value->setRange(0, 99999);
   value->setValue(default_);
-  connect(value, qOverload<int>(&QSpinBox::valueChanged), [value, max](int i) {
+  connect(value, &QSpinBox::valueChanged, [value, max](int i) {
     if (i > max)
       value->setValue(max);
   });
@@ -154,7 +154,7 @@ QSpinBox* TASInputWindow::CreateSliderValuePair(QBoxLayout* layout, int default_
   slider->setInvertedAppearance(invert);
 
   connect(slider, &QSlider::valueChanged, value, &QSpinBox::setValue);
-  connect(value, qOverload<int>(&QSpinBox::valueChanged), slider, &QSlider::setValue);
+  connect(value, &QSpinBox::valueChanged, slider, &QSlider::setValue);
 
   auto* shortcut = new QShortcut(shortcut_key_sequence, shortcut_widget);
   connect(shortcut, &QShortcut::activated, [value] {
