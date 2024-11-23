@@ -179,10 +179,6 @@ public:
                                  Arm64Gen::ARM64Reg scratch_reg = Arm64Gen::ARM64Reg::INVALID_REG);
 
   void FloatCompare(UGeckoInstruction inst, bool upper = false);
-  
-  // temp_gpr can be INVALID_REG if single is true
-  void EmitQuietNaNBitConstant(Arm64Gen::ARM64Reg dest_reg, bool single,
-                               Arm64Gen::ARM64Reg temp_gpr);
 
   bool IsFPRStoreSafe(size_t guest_reg) const;
 
