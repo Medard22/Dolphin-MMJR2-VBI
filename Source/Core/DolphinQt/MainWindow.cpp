@@ -245,6 +245,13 @@ MainWindow::MainWindow(std::unique_ptr<BootParameters> boot_parameters,
   connect(m_cheats_manager, &CheatsManager::OpenGeneralSettings, this,
           &MainWindow::ShowGeneralWindow);
 
+#ifdef USE_RETRO_ACHIEVEMENTS
+  connect(m_cheats_manager, &CheatsManager::OpenAchievementSettings, this,
+          &MainWindow::ShowAchievementSettings);
+  connect(m_game_list, &GameList::OpenAchievementSettings, this,
+          &MainWindow::ShowAchievementSettings);
+#endif  // USE_RETRO_ACHIEVEMENTS
+
   InitCoreCallbacks();
 
   NetPlayInit();
@@ -1245,6 +1252,11 @@ void MainWindow::ShowFreeLookWindow()
   {
     m_freelook_window = new FreeLookWindow(this);
     InstallHotkeyFilter(m_freelook_window);
+
+#ifdef USE_RETRO_ACHIEVEMENTS
+    connect(m_freelook_window, &FreeLookWindow::OpenAchievementSettings, this,
+            &MainWindow::ShowAchievementSettings);
+#endif  // USE_RETRO_ACHIEVEMENTS
   }
 
   SetQWidgetWindowDecorations(m_freelook_window);
@@ -1970,6 +1982,12 @@ void MainWindow::ShowAchievementsWindow()
   m_achievements_window->raise();
   m_achievements_window->activateWindow();
 }
+
+void MainWindow::ShowAchievementSettings()
+{
+  ShowAchievementsWindow();
+  m_achievements_window->ForceSettingsTab();
+}
 #endif  // USE_RETRO_ACHIEVEMENTS
 
 void MainWindow::ShowMemcardManager()
@@ -2010,6 +2028,12 @@ void MainWindow::ShowRiivolutionBootWidget(const UICommon::GameFile& game)
   RiivolutionBootWidget w(disc.volume->GetGameID(), disc.volume->GetRevision(),
                           disc.volume->GetDiscNumber(), game.GetFilePath(), this);
   SetQWidgetWindowDecorations(&w);
+
+#ifdef USE_RETRO_ACHIEVEMENTS
+  connect(&w, &RiivolutionBootWidget::OpenAchievementSettings, this,
+          &MainWindow::ShowAchievementSettings);
+#endif  // USE_RETRO_ACHIEVEMENTS
+
   w.exec();
   if (!w.ShouldBoot())
     return;
