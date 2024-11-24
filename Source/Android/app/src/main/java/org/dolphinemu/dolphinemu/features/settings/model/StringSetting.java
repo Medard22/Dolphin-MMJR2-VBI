@@ -19,7 +19,7 @@ public enum StringSetting implements AbstractStringSetting
 
   // Schthack PSO Server - https://schtserv.com/
   MAIN_BBA_BUILTIN_DNS(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "BBA_BUILTIN_DNS",
-          "149.56.167.128"),
+          "3.18.217.27"),
 
   MAIN_GFX_BACKEND(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "GFXBackend",
           NativeLibrary.GetDefaultGraphicsBackendName()),
