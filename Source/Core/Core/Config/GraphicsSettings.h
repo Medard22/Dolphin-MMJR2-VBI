@@ -28,6 +28,8 @@ extern const Info<int> GFX_ADAPTER;
 
 extern const Info<bool> GFX_WIDESCREEN_HACK;
 extern const Info<AspectMode> GFX_ASPECT_RATIO;
+extern const Info<int> GFX_CUSTOM_ASPECT_RATIO_WIDTH;
+extern const Info<int> GFX_CUSTOM_ASPECT_RATIO_HEIGHT;
 extern const Info<AspectMode> GFX_SUGGESTED_ASPECT_RATIO;
 extern const Info<u32> GFX_WIDESCREEN_HEURISTIC_TRANSITION_THRESHOLD;
 extern const Info<float> GFX_WIDESCREEN_HEURISTIC_ASPECT_RATIO_SLOP;
@@ -74,6 +76,7 @@ extern const Info<bool> GFX_FAST_DEPTH_CALC;
 extern const Info<u32> GFX_MSAA;
 extern const Info<bool> GFX_SSAA;
 extern const Info<int> GFX_EFB_SCALE;
+extern const Info<int> GFX_MAX_EFB_SCALE;
 extern const Info<bool> GFX_TEXFMT_OVERLAY_ENABLE;
 extern const Info<bool> GFX_TEXFMT_OVERLAY_CENTER;
 extern const Info<bool> GFX_ENABLE_WIREFRAME;
