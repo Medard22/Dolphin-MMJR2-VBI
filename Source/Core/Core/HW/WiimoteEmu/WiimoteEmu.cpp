@@ -637,9 +637,6 @@ void Wiimote::SendDataReport(const DesiredWiimoteState& target_state)
         std::fill_n(ext_data, ext_size, u8(0xff));
       }
     }
-
-    Movie::CallWiiInputManip(rpt_builder, m_bt_device_index, m_active_extension,
-                             GetExtensionEncryptionKey());
   }
 
   movie.CheckWiimoteStatus(m_bt_device_index, rpt_builder, m_active_extension,
