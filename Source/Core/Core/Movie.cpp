@@ -1432,6 +1432,28 @@ void MovieManager::SaveRecording(const std::string& filename)
     Core::DisplayMessage(fmt::format("Failed to save {}", filename), 2000);
 }
 
+void MovieManager::SetGCInputManip(GCManipFunction func)
+{
+  m_gc_manip_func = std::move(func);
+}
+void MovieManager::SetWiiInputManip(WiiManipFunction func)
+{
+  m_wii_manip_func = std::move(func);
+}
+
+// NOTE: CPU Thread
+void MovieManager::CallGCInputManip(GCPadStatus* PadStatus, int controllerID)
+{
+  if (m_gc_manip_func)
+    m_gc_manip_func(PadStatus, controllerID);
+}
+// NOTE: CPU Thread
+void MovieManager::CallWiiInputManip(DataReportBuilder& rpt, int controllerID, int ext, const EncryptionKey& key)
+{
+  if (m_wii_manip_func)
+    m_wii_manip_func(rpt, controllerID, ext, key);
+}
+
 // NOTE: GPU Thread
 void MovieManager::SetGraphicsConfig()
 {
