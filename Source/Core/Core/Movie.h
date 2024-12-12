@@ -5,7 +5,6 @@
 
 #include <array>
 #include <cstring>
-#include <functional>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -226,16 +225,6 @@ public:
   std::string GetRTCDisplay();
   std::string GetRerecords();
 
-// Done this way to avoid mixing of core and gui code
-using GCManipFunction = std::function<void(GCPadStatus*, int)>;
-using WiiManipFunction = std::function<void(WiimoteCommon::DataReportBuilder&, int, int,
-                                            const WiimoteEmu::EncryptionKey&)>;
-
-void SetGCInputManip(GCManipFunction);
-void SetWiiInputManip(WiiManipFunction);
-void CallGCInputManip(GCPadStatus* PadStatus, int controllerID);
-void CallWiiInputManip(WiimoteCommon::DataReportBuilder& rpt, int controllerID, int ext,
-                       const WiimoteEmu::EncryptionKey& key);
 private:
   void GetSettings();
   void CheckInputEnd();
