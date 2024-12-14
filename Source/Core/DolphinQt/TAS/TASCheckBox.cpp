@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 
 #include "Core/Movie.h"
+#include "Core/System.h"
 #include "DolphinQt/TAS/TASInputWindow.h"
 
 TASCheckBox::TASCheckBox(const QString& text, TASInputWindow* parent)
@@ -18,7 +19,8 @@ bool TASCheckBox::GetValue() const
 {
   if (checkState() == Qt::PartiallyChecked)
   {
-    const u64 frames_elapsed = Movie::GetCurrentFrame() - m_frame_turbo_started;
+    const u64 frames_elapsed =
+        Core::System::GetInstance().GetMovie().GetCurrentFrame() - m_frame_turbo_started;
     return static_cast<int>(frames_elapsed % m_turbo_total_frames) < m_turbo_press_frames;
   }
 
@@ -39,7 +41,7 @@ void TASCheckBox::mousePressEvent(QMouseEvent* event)
     return;
   }
 
-  m_frame_turbo_started = Movie::GetCurrentFrame();
+  m_frame_turbo_started = Core::System::GetInstance().GetMovie().GetCurrentFrame();
   m_turbo_press_frames = m_parent->GetTurboPressFrames();
   m_turbo_total_frames = m_turbo_press_frames + m_parent->GetTurboReleaseFrames();
   setCheckState(Qt::PartiallyChecked);
