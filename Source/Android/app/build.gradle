@@ -8,14 +8,13 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    defaultConfig {
-        // compileSdkVersion 33
-        compileSdk 33
+        compileSdk 34
+        ndkVersion "26.1.10909125"
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
     }
-
-    ndkVersion "26.1.10909125"
-
-    viewBinding.enabled = true
 
     compileOptions {
         // Flag to enable support for the new language APIs
@@ -144,9 +143,16 @@ dependencies {
     implementation 'com.nononsenseapps:filepicker:4.2.1'
 }
 
-static def getVersion()
-{
-    return 'DEV-24.12.19'
+def getVersion() {
+    def versionNumber = '0.0'
+
+    try {
+        versionNumber = 'git rev-parse --short HEAD'.execute([], project.rootDir).text.trim()
+    } catch (Exception e) {
+        logger.error('Cannot find git, defaulting to dummy version number')
+    }
+
+    return versionNumber + "-DEV"
 }
 
 def getBuildVersionCode() {
