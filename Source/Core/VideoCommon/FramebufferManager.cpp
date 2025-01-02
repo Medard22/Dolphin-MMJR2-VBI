@@ -216,8 +216,9 @@ std::tuple<u32, u32> FramebufferManager::CalculateTargetSize()
     m_efb_scale = g_presenter->AutoIntegralScale();
   else
     m_efb_scale = g_ActiveConfig.iEFBScale;
-    if (m_efb_scale < 10)
-        m_efb_scale *= 100;
+
+  if (m_efb_scale < 10)
+      m_efb_scale *= 100;
 
   const u32 max_size = g_ActiveConfig.backend_info.MaxTextureSize;
   if (max_size < EFB_WIDTH * m_efb_scale / 100)
