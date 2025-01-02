@@ -1,13 +1,61 @@
 # Dolphin MMJR2 - VBI Fork
-This fork is intended mostly for personal use. My initial goal was to incorporate a series of pull requests from Sam Belliveau into the MMJR2 codebase that implement the VBI Skip speed hack, which was a success. After that,  I am slowly updating the MMJR2 codebase with changes and fixes from Dolphin Official. All changes to the code are handled by pull requests, credited and linked to original pull requests from Official Dolphin repository.
-I primarily test on a SD855+ device and Retroid POcket 4 Pro. Unfortunately I no longer own my old trusty Retroid Pocket 3+. Builds beyond version 2.2.110 are no longer tested on potato devices and might have preformance regressions.
 
-BEWARE: this is based on old source code! Things may break, saves may corrupt, apps may crash, and there might be no fixes in the near future! If you don't want to experiment or are new to emulation, stick with Official Dolphin!
------------------------------------------------------------------------
-Thank you Dolphin team for your amazing work. Your dedication and hard work have made it possible for people to play their favorite games on modern hardware. Keep it up!” 🐬👏 Thanks to the developers of the original MMJR and MMJR2 fork, and Lumince for keeping MMJR2 alive for so long.  
------------------------------------------------------------------------
+This is a personal fork of Dolphin MMJR2. Initially, the goal of this fork was to implement Sam Belliveau's VBI Skip speed hack into the MMJR2 codebase, but has since grown into a semi-actively maintained project. My primary focus is preserving the older MMJR2 user interface, which I find more intuitive and user-friendly, and support for fractional scaling while integrating features and fixes from the upstream Dolphin repository.
 
-# Dolphin MMJR2 Fork
+## Disclaimer
+- **WARNING**: This fork is based on older source code! It may introduce bugs of its own and the support I can give is very limited. If you are new to emulation or prefer stability, please use [Official Dolphin](https://dolphin-emu.org/).
+
+## Android Requirements
+
+* OS
+    * Android 5.0 Lollipop or higher (SDK >= 21)).
+* Processor
+    * A 64-bit ARM CPU supporting arm64-v8a ABI.
+* Graphics
+    * A graphics processor that supports OpenGL ES 3.0 or higher. Performance varies heavily with [driver quality](https://dolphin-emu.org/blog/2013/09/26/dolphin-emulator-and-opengl-drivers-hall-fameshame/).
+    * A graphics processor that supports standard desktop OpenGL features is recommended for best performance.
+
+Dolphin can only be installed on devices that satisfy the above requirements. Attempting to install on an unsupported device will fail and display an error message.
+
+## Additional Information
+- This user directory for this fork is created in /mmjr2-vbi/ at the root of your device.
+- The id of this fork is `org.dolphinemu.mmjr`. It may be installed together with Dolphin Official, but not with other MMJR2 forks. 
+
+## Folder Structure
+* `Cache`: Game Covers, UID Caches and Shader Caches
+* `Config`: Configuration files
+* `Dump`: Anything dumped from Dolphin
+* `GameSettings`: Per-game custom configurations
+* `GC`: Memory cards and system BIOS
+* `Load`: Graphic Mods, Riivolution Patches, Custom Textures, WiiSDSync
+* `Logs`: Logs, if enabled
+* `ResourcePacks`: Android build doesn´t support Resource Packs, use Load folder instead
+* `ScreenShots`: Screenshots taken via Dolphin
+* `StateSaves`: Save States, if enabled
+* `Wii`: Wii NAND contents
+
+## Custom Textures
+Custom textures have to be placed in the user directory under `Load/Textures/[GameID]/`. You can find the Game ID by long-pressing n the game and selecting "Details".
+
+## Riivolution Patches
+Riivolution Patches have to be placed in the user directory under `Load/Riivolution/[GameID]/`. Once you have extracted the patches here, long press on the game and select `Start with Riivolution Patches`
+
+## Acknowledgments
+A huge thank you to:
+- **Dolphin Team**: For their incredible work in making emulation possible on modern hardware. Your dedication and contributions are truly inspiring! 🐬👏
+- **Original MMJR and MMJR2 Developers**: For creating and maintaining these forks.
+- **Lumince**: For keeping MMJR2 alive and well for so long and letting me continue their work.
+- **Sam Belliveau**: For the VBI Skip speed hack that started this whole mess.
+
+## Last Notes
+I work on this fork in my spare time and while I wouldn´t call myself a developer, it is a fun way to learn code and app development.
+
+Any help is welcome. If you want to contribute, leave me a message in [Discussions](https://github.com/Medard22/Dolphin-MMJR2-VBI/discussions).
+
+You can find the latest changelog [here](https://github.com/Medard22/Dolphin-MMJR2-VBI/discussions/45)
+
+
+## Dolphin MMJR2 Fork
 Mainly, this fork is meant for personal use. This repo's only function at the current time is to update MMJR2 to the latest Dolphin Offical Dev Source code without scoped storage changes merged.
 If you want scoped storage, go use Dolphin Official Builds. I have no use for scoped storage, nor any changes related to it. I wont be merging these changes. Have a nice day!
 
@@ -46,7 +94,7 @@ Please read the [FAQ](https://dolphin-emu.org/docs/faq/) before using Dolphin.
 ### Android
 
 * OS
-    * Android 5.0 Lollipop or higher (SDK >= 21).
+    * Android (5.0 Lollipop or higher).
 * Processor
     * A processor with support for 64-bit applications (either ARMv8 or x86-64).
 * Graphics
@@ -158,28 +206,45 @@ automatically while building the Java code.
 
 ## Uninstalling
 
-When Dolphin has been installed with the NSIS installer, you can uninstall
-Dolphin like any other Windows application.
+On Windows, simply remove the extracted directory, unless it was installed with the NSIS installer,
+in which case you can uninstall Dolphin like any other Windows application.
 
 Linux users can run `cat install_manifest.txt | xargs -d '\n' rm` as root from the build directory
 to uninstall Dolphin from their system.
 
 macOS users can simply delete Dolphin.app to uninstall it.
 
-Additionally, you'll want to remove the global user directory (see below to
-see where it's stored) if you don't plan to reinstall Dolphin.
+Additionally, you'll want to remove the global user directory if you don't plan on reinstalling Dolphin.
 
 ## Command Line Usage
 
-`Usage: Dolphin [-h] [-d] [-l] [-e <str>] [-b] [-v <str>] [-a <str>]`
+```
+Usage: Dolphin.exe [options]... [FILE]...
 
-* -h, --help Show this help message
-* -d, --debugger Show the debugger pane and additional View menu options
-* -l, --logger Open the logger
-* -e, --exec=<str> Load the specified file (DOL,ELF,WAD,GCM,ISO)
-* -b, --batch Exit Dolphin with emulator
-* -v, --video_backend=<str> Specify a video backend
-* -a, --audio_emulation=<str> Low level (LLE) or high level (HLE) audio
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -u USER, --user=USER  User folder path
+  -m MOVIE, --movie=MOVIE
+                        Play a movie file
+  -e <file>, --exec=<file>
+                        Load the specified file
+  -n <16-character ASCII title ID>, --nand_title=<16-character ASCII title ID>
+                        Launch a NAND title
+  -C <System>.<Section>.<Key>=<Value>, --config=<System>.<Section>.<Key>=<Value>
+                        Set a configuration option
+  -s <file>, --save_state=<file>
+                        Load the initial save state
+  -d, --debugger        Show the debugger pane and additional View menu options
+  -l, --logger          Open the logger
+  -b, --batch           Run Dolphin without the user interface (Requires
+                        --exec or --nand-title)
+  -c, --confirm         Set Confirm on Stop
+  -v VIDEO_BACKEND, --video_backend=VIDEO_BACKEND
+                        Specify a video backend
+  -a AUDIO_EMULATION, --audio_emulation=AUDIO_EMULATION
+                        Choose audio emulation from [HLE|LLE]
+```
 
 Available DSP emulation engines are HLE (High Level Emulation) and
 LLE (Low Level Emulation). HLE is faster but less accurate whereas
@@ -191,65 +256,66 @@ There's also "Null", which will not render anything, and
 "Software Renderer", which uses the CPU for rendering and
 is intended for debugging purposes only.
 
-## Sys Files
+## DolphinTool Usage
+```
+usage: dolphin-tool COMMAND -h
 
-* `wiitdb.txt`: Wii title database from [GameTDB](https://www.gametdb.com/)
-* `totaldb.dsy`: Database of symbols (for devs only)
-* `GC/font_western.bin`: font dumps
-* `GC/font_japanese.bin`: font dumps
-* `GC/dsp_coef.bin`: DSP dumps
-* `GC/dsp_rom.bin`: DSP dumps
-* `Wii/clientca.pem`: Wii network certificate
-* `Wii/clientcakey.pem`: Wii network certificate key
-* `Wii/rootca.pem`: Wii network certificate issuer / CA
+commands supported: [convert, verify, header]
+```
 
-The DSP dumps included with Dolphin have been written from scratch and do not
-contain any copyrighted material. They should work for most purposes, however
-some games implement copy protection by checksumming the dumps. You will need
-to dump the DSP files from a console and replace the default dumps if you want
-to fix those issues.
+```
+Usage: convert [options]... [FILE]...
 
-Wii network certificates must be extracted from a Wii IOS. A guide for that can be found [here](https://wiki.dolphin-emu.org/index.php?title=Wii_Network_Guide).
+Options:
+  -h, --help            show this help message and exit
+  -u USER, --user=USER  User folder path, required for temporary processing
+                        files.Will be automatically created if this option is
+                        not set.
+  -i FILE, --input=FILE
+                        Path to disc image FILE.
+  -o FILE, --output=FILE
+                        Path to the destination FILE.
+  -f FORMAT, --format=FORMAT
+                        Container format to use. Default is RVZ. [iso|gcz|wia|rvz]
+  -s, --scrub           Scrub junk data as part of conversion.
+  -b BLOCK_SIZE, --block_size=BLOCK_SIZE
+                        Block size for GCZ/WIA/RVZ formats, as an integer.
+                        Suggested value for RVZ: 131072 (128 KiB)
+  -c COMPRESSION, --compression=COMPRESSION
+                        Compression method to use when converting to WIA/RVZ.
+                        Suggested value for RVZ: zstd [none|zstd|bzip|lzma|lzma2]
+  -l COMPRESSION_LEVEL, --compression_level=COMPRESSION_LEVEL
+                        Level of compression for the selected method. Ignored
+                        if 'none'. Suggested value for zstd: 5
+```
 
-## Folder Structure
+```
+Usage: verify [options]...
 
-These folders are installed read-only and should not be changed:
+Options:
+  -h, --help            show this help message and exit
+  -u USER, --user=USER  User folder path, required for temporary processing
+                        files.Will be automatically created if this option is
+                        not set.
+  -i FILE, --input=FILE
+                        Path to disc image FILE.
+  -a ALGORITHM, --algorithm=ALGORITHM
+                        Optional. Compute and print the digest using the
+                        selected algorithm, then exit. [crc32|md5|sha1]
+```
 
-* `GameSettings`: per-game default settings database
-* `GC`: DSP and font dumps
-* `Shaders`: post-processing shaders
-* `Themes`: icon themes for GUI
-* `Resources`: icons that are theme-agnostic
-* `Wii`: default Wii NAND contents
+```
+Usage: header [options]...
 
-## User Folder Structure
-
-List of user folders:
-
-* `Cache`: used to cache the ISO list
-* `Config`: configuration files
-* `Dump`: anything dumped from Dolphin
-* `GameSettings`: additional settings to be applied per-game
-* `GBA`: GBA saves
-* `GC`: memory cards and system BIOS
-* `Load`: graphicmods, riivolution patches, custom textures, wiisdsync, wiiSD
-* `Logs`: logs, if enabled
-* `ScreenShots`: screenshots taken via Dolphin
-* `StateSaves`: save states
-* `Wii`: Wii NAND contents
-
-## GraphicMods
-
-GraphicMods have to be placed in the user directory under
-`Load/GraphicMods/[GameID]/`. Once you have extracted the graphic mods here, you will need to enable them in settings `Settings > Graphics > Advanced > Graphic Mods`
-
-## Riivolution Patches
-
-Riivolution Patches have to be placed in the user directory under
-`Load/Riivolution/[GameID]/`. Once you have extracted the patches here, long press on the game and select `Start with Riivolution Patches`
-
-## Custom Textures
-
-Custom textures have to be placed in the user directory under
-`Load/Textures/[GameID]/`. You can find the Game ID by right-clicking a game
-in the ISO list and selecting "ISO Properties".
+Options:
+  -h, --help            show this help message and exit
+  -i FILE, --input=FILE
+                        Path to disc image FILE.
+  -b, --block_size      Optional. Print the block size of GCZ/WIA/RVZ formats,
+then exit.
+  -c, --compression     Optional. Print the compression method of GCZ/WIA/RVZ
+                        formats, then exit.
+  -l, --compression_level
+                        Optional. Print the level of compression for WIA/RVZ
+                        formats, then exit.
+```
