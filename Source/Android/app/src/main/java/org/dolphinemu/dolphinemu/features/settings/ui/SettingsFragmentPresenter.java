@@ -626,10 +626,20 @@ public final class SettingsFragmentPresenter
       sl.add(new InputStringSetting(mContext, StringSetting.MAIN_BBA_XLINK_IP,
               R.string.xlink_kai_bba_ip, R.string.xlink_kai_bba_ip_description));
     }
+    else if (serialPort1Type == 11) // Broadband Adapter (tapserver)
+    {          
+      sl.add(new InputStringSetting(mContext, StringSetting.MAIN_BBA_TAPSERVER_DESTINATION,
+              R.string.bba_tapserver_destination, R.string.bba_tapserver_destination_description));
+    }
     else if (serialPort1Type == 12) // Broadband Adapter (Built In)
     {
       sl.add(new InputStringSetting(mContext, StringSetting.MAIN_BBA_BUILTIN_DNS,
               R.string.bba_builtin_dns, R.string.bba_builtin_dns_description));
+    }
+    else if (serialPort1Type == 13) // // Modem Adapter (tapserver)
+    {
+      sl.add(new InputStringSetting(mContext, StringSetting.MAIN_MODEM_TAPSERVER_DESTINATION,
+              R.string.modem_tapserver_destination, R.string.modem_tapserver_destination_description));
     }
   }
 
