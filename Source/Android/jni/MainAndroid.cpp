@@ -306,7 +306,7 @@ JNIEXPORT jboolean JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_IsRunnin
 JNIEXPORT jboolean JNICALL
 Java_org_dolphinemu_dolphinemu_NativeLibrary_IsRunningAndUnpaused(JNIEnv*, jclass)
 {
-  return static_cast<jboolean>(Core::GetState() == Core::State::Running);
+  return static_cast<jboolean>(Core::GetState(Core::System::GetInstance()) == Core::State::Running);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_onGamePadEvent(
@@ -504,7 +504,7 @@ JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_SurfaceDestr
       host_identity_guard.Lock();
     }
 
-    if (Core::GetState() == Core::State::Running)
+    if (Core::GetState(Core::System::GetInstance()) == Core::State::Running)
       Core::SetState(Core::State::Paused);
   }
 
@@ -654,8 +654,7 @@ static void Run(JNIEnv* env, std::unique_ptr<BootParameters>&& boot, bool riivol
     ButtonManager::Init(SConfig::GetInstance().GetGameID());
 
     static constexpr int WAIT_STEP = 25;
-    while (Core::GetState() == Core::State::Starting)
-
+    while (Core::GetState(Core::System::GetInstance()) == Core::State::Starting)
       std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_STEP));
   }
 
