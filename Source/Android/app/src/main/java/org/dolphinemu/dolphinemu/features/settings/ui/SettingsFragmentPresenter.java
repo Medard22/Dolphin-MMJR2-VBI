@@ -894,6 +894,13 @@ public final class SettingsFragmentPresenter
     sl.add(new InvertedCheckBoxSetting(mContext, BooleanSetting.MAIN_LARGE_ENTRY_POINTS_MAP,
             R.string.debug_large_entry_points_map, 0));
 
+    sl.add(new HeaderSetting(mContext,  R.string.debug_jit_profiling_header, 0));
+    sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_DEBUG_JIT_ENABLE_PROFILING,
+            R.string.debug_jit_enable_block_profiling, 0));
+    sl.add(new RunRunnable (mContext,
+            R.string.debug_jit_write_block_log_dump, 0, 0, 0, true,
+            () -> NativeLibrary.WriteJitBlockLogDump()));
+
     sl.add(new HeaderSetting(mContext, R.string.debug_jit_header, 0));
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_DEBUG_JIT_OFF, R.string.debug_jitoff,
             0));
