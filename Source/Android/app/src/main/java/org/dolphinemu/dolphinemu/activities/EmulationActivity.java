@@ -430,7 +430,7 @@ public final class EmulationActivity extends AppCompatActivity
     if (!mMenuToastShown)
     {
       // The reason why this doesn't run earlier is because we want to be sure the boot succeeded.
-      Toast.makeText(this, R.string.emulation_menu_help, Toast.LENGTH_LONG).show();
+      // Toast.makeText(this, R.string.emulation_menu_help, Toast.LENGTH_LONG).show();
       mMenuToastShown = true;
     }
 
