@@ -91,7 +91,6 @@ protected:
   {
     u32 compilerPC;
     u32 blockStart;
-    int instructionNumber;
     int instructionsLeft;
     int downcountAmount;
     u32 numLoadStoreInst;
