@@ -23,8 +23,8 @@ void AndroidTheme::Set(const std::string& theme)
   }
   else
   {
-    currentFloat = F_PURPLE;
-    currentInt = &PURPLE;
+    currentFloat = F_YELLOW;
+    currentInt = &YELLOW;
   }
 }
 
