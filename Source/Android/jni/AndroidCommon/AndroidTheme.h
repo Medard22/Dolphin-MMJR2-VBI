@@ -25,16 +25,14 @@ constexpr u32 PURPLE = 0xFFFF00FF;
 constexpr u32 RED = 0xFFFF0000;
 constexpr u32 BLUE = 0xFF00FFFF;
 constexpr u32 GREEN = 0xFF00FF00;
-constexpr u32 YELLOW = 0xFFFFFF30;
 
 constexpr float F_PURPLE[3] = {RED_MASK(PURPLE) / 255.0f, GREEN_MASK(PURPLE) / 255.0f, BLUE_MASK(PURPLE) / 255.0f};
 constexpr float F_RED[3] = {RED_MASK(RED) / 255.0f, GREEN_MASK(RED) / 255.0f, BLUE_MASK(RED) / 255.0f};
 constexpr float F_BLUE[3] = {RED_MASK(BLUE) / 255.0f, GREEN_MASK(BLUE) / 255.0f, BLUE_MASK(BLUE) / 255.0f};
 constexpr float F_GREEN[3] = {RED_MASK(GREEN) / 255.0f, GREEN_MASK(GREEN) / 255.0f, BLUE_MASK(GREEN) / 255.0f};
-constexpr float F_YELLOW[3] = {RED_MASK(YELLOW) / 255.0f, GREEN_MASK(YELLOW) / 255.0f, BLUE_MASK(YELLOW) / 255.0f};
 
-const float *currentFloat{F_YELLOW};
-const u32 *currentInt{&YELLOW};
+const float *currentFloat{F_PURPLE};
+const u32 *currentInt{&PURPLE};
 }  // Anonymous namespace
 
 void Set(const std::string& theme);
