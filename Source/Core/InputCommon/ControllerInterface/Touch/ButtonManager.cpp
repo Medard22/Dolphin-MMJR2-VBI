@@ -22,6 +22,7 @@
 #include "Core/HW/WiimoteEmu/Extension/Classic.h"
 #include "Core/HW/WiimoteEmu/Extension/Nunchuk.h"
 #include "Core/HW/WiimoteEmu/WiimoteEmu.h"
+#include "Core/System.h"
 
 #include "InputCommon/ControllerEmu/ControlGroup/ControlGroup.h"
 #include "InputCommon/ControllerEmu/StickGate.h"
@@ -712,7 +713,7 @@ float GetAxisValue(int pad_id, ButtonType axis)
 double GetInputRadiusAtAngle(int pad_id, ButtonType stick, double angle)
 {
   // To avoid a crash, don't access controllers before they've been initialized by the boot process
-  if (!Core::IsRunningAndStarted())
+  if (!Core::IsRunning(Core::System::GetInstance()))
     return 0;
 
   ControllerEmu::ControlGroup* group;
