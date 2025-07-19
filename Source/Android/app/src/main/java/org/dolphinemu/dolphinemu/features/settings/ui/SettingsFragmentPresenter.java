@@ -279,9 +279,10 @@ public final class SettingsFragmentPresenter
     sl.add(new SubmenuSetting(mContext, R.string.gamecube_submenu, MenuTag.CONFIG_GAME_CUBE));
     sl.add(new SubmenuSetting(mContext, R.string.wii_submenu, MenuTag.CONFIG_WII));
     sl.add(new SubmenuSetting(mContext, R.string.log_submenu, MenuTag.CONFIG_LOG));
-    sl.add(new SubmenuSetting(mContext, R.string.debug_submenu, MenuTag.DEBUG));
-    sl.add(new HeaderSetting(mContext, R.string.gametdb_thanks,0));
+    sl.add(new SubmenuSetting(mContext, R.string.debug_submenu, MenuTag.DEBUG));    
+    sl.add(new HeaderSetting(mContext, R.string.dev,0));
     sl.add(new HeaderSetting(mContext, R.string.dev_thanks,0));
+    sl.add(HeaderSetting.centered(mContext, R.string.about,0));
   }
 
   private void addGeneralSettings(ArrayList<SettingsItem> sl)
