@@ -30,6 +30,7 @@ public abstract class SettingsItem
   public static final int TYPE_STRING = 11;
   public static final int TYPE_HYPERLINK_HEADER = 12;
   public static final int TYPE_SLIDER_SELECTOR = 13;
+  public static final int TYPE_HEADER_CENTERED = 14;
 
   private final CharSequence mName;
   private final CharSequence mDescription;
