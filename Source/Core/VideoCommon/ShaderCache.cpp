@@ -688,7 +688,14 @@ static GXPipelineUid ApplyDriverBugs(const GXPipelineUid& in)
   if (!g_ActiveConfig.backend_info.bSupportsDualSourceBlend)
   {
     ps->no_dual_src = true;
-    blend.usedualsrc = false;
+    blend.usedualsrc = false;    
+  }
+
+  // disable useDstAlpha on Vulkan if DSB is unsupported
+  if (!g_ActiveConfig.backend_info.bSupportsDualSourceBlend &&
+    g_ActiveConfig.backend_info.api_type == APIType::Vulkan)
+  {
+    ps->useDstAlpha = false;
   }
 
   if (ps->ztest == EmulatedZ::ForcedEarly && !g_ActiveConfig.backend_info.bSupportsEarlyZ)
