@@ -151,6 +151,33 @@
         <item>2</item>
     </integer-array>
 
+    <string-array name="gestureActionEntries">
+        <item>None</item>
+        <item>A</item>
+        <item>B</item>
+        <item>1</item>
+        <item>2</item>
+        <item>+</item>
+        <item>−</item>
+        <item>D-pad</item>
+        <item>C</item>
+        <item>Z</item>
+        <item>Stick</item>
+    </string-array>
+    <integer-array name="gestureActionValues" translatable="false">
+        <item>0</item>
+        <item>100</item>
+        <item>101</item>
+        <item>105</item>
+        <item>106</item>
+        <item>103</item>
+        <item>102</item>
+        <item>1000</item>
+        <item>200</item>
+        <item>201</item>
+        <item>1001</item>
+    </integer-array>
+
     <!-- Sensor Bar Position -->
     <string-array name="sensorBarPositionEntries">
         <item>Top</item>

@@ -71,6 +71,7 @@ public final class SettingsFragment extends Fragment implements SettingsFragment
     titles.put(MenuTag.WIIMOTE_EXTENSION_2, R.string.wiimote_extension_5);
     titles.put(MenuTag.WIIMOTE_EXTENSION_3, R.string.wiimote_extension_6);
     titles.put(MenuTag.WIIMOTE_EXTENSION_4, R.string.wiimote_extension_7);
+    titles.put(MenuTag.GESTURES, R.string.gesture_submenu);
   }
 
   private FragmentSettingsBinding mBinding;

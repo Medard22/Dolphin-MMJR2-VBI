@@ -15,6 +15,7 @@ public enum MenuTag
   CONFIG_GAME_CUBE("config_gamecube"),
   CONFIG_SERIALPORT1("config_serialport1"),
   CONFIG_WII("config_wii"),
+  GESTURES("gestures"),
   CONFIG_ADVANCED("config_advanced"),
   CONFIG_LOG("config_log"),
   DEBUG("debug"),

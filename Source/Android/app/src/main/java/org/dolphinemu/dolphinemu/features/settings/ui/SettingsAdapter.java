@@ -22,6 +22,7 @@ import org.dolphinemu.dolphinemu.databinding.ListItemSettingBinding;
 import org.dolphinemu.dolphinemu.databinding.ListItemSettingCheckboxBinding;
 import org.dolphinemu.dolphinemu.databinding.ListItemSubmenuBinding;
 import org.dolphinemu.dolphinemu.dialogs.MotionAlertDialog;
+import org.dolphinemu.dolphinemu.features.settings.model.IntSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.Settings;
 import org.dolphinemu.dolphinemu.features.settings.model.view.CheckBoxSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.view.FilePicker;
@@ -61,6 +62,8 @@ import java.util.ArrayList;
 public final class SettingsAdapter extends RecyclerView.Adapter<SettingViewHolder>
         implements DialogInterface.OnClickListener, SeekBar.OnSeekBarChangeListener
 {
+  private static final int GESTURE_ACTION_DPAD = 1000;
+  private static final int GESTURE_ACTION_STICK = 1001;
   private final SettingsFragmentView mView;
   private final Context mContext;
   private ArrayList<SettingsItem> mSettings;
@@ -440,6 +443,7 @@ public final class SettingsAdapter extends RecyclerView.Adapter<SettingViewHolde
       handleMenuTag(scSetting.getMenuTag(), value);
 
       scSetting.setSelectedValue(getSettings(), value);
+      applyGestureAutoFill(scSetting, value);
 
       closeDialog();
     }
@@ -492,6 +496,45 @@ public final class SettingsAdapter extends RecyclerView.Adapter<SettingViewHolde
 
     mClickedItem = null;
     mSeekbarProgress = -1;
+  }
+
+  private void applyGestureAutoFill(SingleChoiceSetting setting, int value)
+  {
+    if (value != GESTURE_ACTION_DPAD && value != GESTURE_ACTION_STICK)
+      return;
+
+    if (!(setting.getSetting() instanceof IntSetting))
+      return;
+
+    IntSetting intSetting = (IntSetting) setting.getSetting();
+    Settings settings = getSettings();
+
+    if (intSetting == IntSetting.GESTURE_LEFT_SWIPE_UP ||
+            intSetting == IntSetting.GESTURE_LEFT_SWIPE_DOWN ||
+            intSetting == IntSetting.GESTURE_LEFT_SWIPE_LEFT ||
+            intSetting == IntSetting.GESTURE_LEFT_SWIPE_RIGHT)
+    {
+      IntSetting.GESTURE_LEFT_SWIPE_UP.setInt(settings, value);
+      IntSetting.GESTURE_LEFT_SWIPE_DOWN.setInt(settings, value);
+      IntSetting.GESTURE_LEFT_SWIPE_LEFT.setInt(settings, value);
+      IntSetting.GESTURE_LEFT_SWIPE_RIGHT.setInt(settings, value);
+      mView.onSettingChanged();
+      notifyDataSetChanged();
+      return;
+    }
+
+    if (intSetting == IntSetting.GESTURE_RIGHT_SWIPE_UP ||
+            intSetting == IntSetting.GESTURE_RIGHT_SWIPE_DOWN ||
+            intSetting == IntSetting.GESTURE_RIGHT_SWIPE_LEFT ||
+            intSetting == IntSetting.GESTURE_RIGHT_SWIPE_RIGHT)
+    {
+      IntSetting.GESTURE_RIGHT_SWIPE_UP.setInt(settings, value);
+      IntSetting.GESTURE_RIGHT_SWIPE_DOWN.setInt(settings, value);
+      IntSetting.GESTURE_RIGHT_SWIPE_LEFT.setInt(settings, value);
+      IntSetting.GESTURE_RIGHT_SWIPE_RIGHT.setInt(settings, value);
+      mView.onSettingChanged();
+      notifyDataSetChanged();
+    }
   }
 
   public void closeDialog()

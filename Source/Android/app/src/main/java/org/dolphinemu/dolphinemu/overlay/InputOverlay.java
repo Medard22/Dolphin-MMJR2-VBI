@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -74,20 +75,30 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
   private InputOverlayDrawableJoystick mJoystickBeingConfigured;
   private InputOverlayDrawableHotkey mHotkeyBeingConfigured;
 
-        private static final String GESTURE_GAME_ID = "SMNP01";
         private static final int GESTURE_DPAD_NONE = -1;
+        private static final int GESTURE_ACTION_NONE = 0;
+        private static final int GESTURE_ACTION_DPAD = 1000;
+        private static final int GESTURE_ACTION_STICK = 1001;
+        private static final long GESTURE_DOUBLE_TAP_WINDOW_MS = 300;
 
         private final int mGestureTouchSlop;
         private int mLeftGesturePointerId = -1;
         private float mLeftGestureStartX;
         private float mLeftGestureStartY;
         private int mLeftGestureDirection = GESTURE_DPAD_NONE;
+        private boolean mLeftGestureMoved;
+        private int mLeftGestureTapAction = GESTURE_ACTION_NONE;
+        private int mLeftGestureSwipeAction = GESTURE_ACTION_NONE;
+        private long mLeftLastTapTime;
 
         private int mRightGesturePointerId = -1;
         private float mRightGestureStartX;
         private float mRightGestureStartY;
-        private boolean mRightGestureAPressed;
-        private boolean mRightGestureBPressed;
+        private int mRightGestureDirection = GESTURE_DPAD_NONE;
+        private boolean mRightGestureMoved;
+        private int mRightGestureTapAction = GESTURE_ACTION_NONE;
+        private int mRightGestureSwipeAction = GESTURE_ACTION_NONE;
+        private long mRightLastTapTime;
 
   private final SharedPreferences mPreferences;
 
@@ -265,11 +276,11 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
       yCursor += targetHeight + margin;
     }
 
-    InputOverlayDrawableButton homeButton = findButton(ButtonType.WIIMOTE_BUTTON_HOME);
-    if (homeButton != null)
-    {
-      int targetWidth = Math.round(homeButton.getWidth() * scale);
-      int targetHeight = Math.round(homeButton.getHeight() * scale);
+                InputOverlayDrawableButton homeButton = findButton(ButtonType.WIIMOTE_BUTTON_HOME);
+                if (homeButton != null)
+                {
+                        int targetWidth = Math.round(homeButton.getWidth() * baseScale);
+                        int targetHeight = Math.round(homeButton.getHeight() * baseScale);
       int x = Math.round((width - targetWidth) / 2f);
       int y = (int) (height - margin - targetHeight);
       homeButton.setBounds(x, y, x + targetWidth, y + targetHeight);
@@ -295,7 +306,7 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
       return onTouchWhileEditing(event);
     }
 
-        boolean gesturePressed = handleNsmbGestureControls(event);
+        boolean gesturePressed = handleGestureControls(event);
 
     int action = event.getActionMasked();
     boolean firstPointer = action != MotionEvent.ACTION_POINTER_DOWN &&
@@ -475,9 +486,9 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
     return true;
   }
 
-        private boolean handleNsmbGestureControls(MotionEvent event)
+        private boolean handleGestureControls(MotionEvent event)
         {
-                if (!isNsmbGestureProfileEnabled())
+                if (!isGestureProfileEnabled())
                         return false;
 
                 int action = event.getActionMasked();
@@ -521,19 +532,12 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 return mLeftGesturePointerId != -1 || mRightGesturePointerId != -1;
         }
 
-        private boolean isNsmbGestureProfileEnabled()
+        private boolean isGestureProfileEnabled()
         {
-                if (!NativeLibrary.IsGameMetadataValid())
-                        return false;
-
                 if (!NativeLibrary.IsEmulatingWii())
                         return false;
 
-                if (getConfiguredControllerType() != OVERLAY_WIIMOTE_SIDEWAYS)
-                        return false;
-
-                String gameId = NativeLibrary.GetCurrentGameID();
-                return GESTURE_GAME_ID.equals(gameId);
+                return BooleanSetting.MAIN_GESTURE_CONTROLS.getBooleanGlobal();
         }
 
         private boolean isLeftGestureZone(float x)
@@ -584,6 +588,10 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 mLeftGestureStartX = x;
                 mLeftGestureStartY = y;
                 mLeftGestureDirection = GESTURE_DPAD_NONE;
+                mLeftGestureMoved = false;
+                mLeftGestureSwipeAction = GESTURE_ACTION_NONE;
+                mLeftGestureTapAction = getGestureLeftTapAction();
+                pressGestureAction(mLeftGestureTapAction, GESTURE_DPAD_NONE);
         }
 
         private void startRightGesture(int pointerId, float x, float y)
@@ -591,10 +599,11 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 mRightGesturePointerId = pointerId;
                 mRightGestureStartX = x;
                 mRightGestureStartY = y;
-                mRightGestureAPressed = false;
-                mRightGestureBPressed = true;
-                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, ButtonType.WIIMOTE_BUTTON_B,
-                                                ButtonState.PRESSED);
+                mRightGestureDirection = GESTURE_DPAD_NONE;
+                mRightGestureMoved = false;
+                mRightGestureSwipeAction = GESTURE_ACTION_NONE;
+                mRightGestureTapAction = getGestureRightTapAction();
+                pressGestureAction(mRightGestureTapAction, GESTURE_DPAD_NONE);
         }
 
         private void updateLeftGesture(MotionEvent event)
@@ -611,27 +620,17 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 float dx = x - mLeftGestureStartX;
                 float dy = y - mLeftGestureStartY;
 
-                if (Math.hypot(dx, dy) < mGestureTouchSlop)
+                if (!mLeftGestureMoved && Math.hypot(dx, dy) < mGestureTouchSlop)
                         return;
 
-                int direction;
-                if (Math.abs(dx) > Math.abs(dy))
-                        direction = dx > 0 ? ButtonType.WIIMOTE_RIGHT : ButtonType.WIIMOTE_LEFT;
-                else
-                        direction = dy > 0 ? ButtonType.WIIMOTE_DOWN : ButtonType.WIIMOTE_UP;
+                mLeftGestureMoved = true;
 
+                int direction = getSwipeDirection(dx, dy);
                 if (direction == mLeftGestureDirection)
                         return;
 
-                if (mLeftGestureDirection != GESTURE_DPAD_NONE)
-                {
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mLeftGestureDirection,
-                                                        ButtonState.RELEASED);
-                }
-
-                mLeftGestureDirection = direction;
-                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mLeftGestureDirection,
-                                                ButtonState.PRESSED);
+                int newAction = getGestureLeftSwipeAction(direction);
+                switchGestureAction(true, newAction, direction);
         }
 
         private void updateRightGesture(MotionEvent event)
@@ -648,70 +647,288 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 float dx = x - mRightGestureStartX;
                 float dy = y - mRightGestureStartY;
 
-                    if (mRightGestureAPressed && Math.hypot(dx, dy) >= mGestureTouchSlop &&
-                            Math.abs(dy) > Math.abs(dx) && dy > 0)
-                    {
-                      NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, ButtonType.WIIMOTE_BUTTON_A,
-                              ButtonState.RELEASED);
-                      mRightGestureAPressed = false;
-                      mRightGestureStartX = x;
-                      mRightGestureStartY = y;
-                      return;
-                    }
+                if (!mRightGestureMoved && Math.hypot(dx, dy) < mGestureTouchSlop)
+                        return;
 
-                if (!mRightGestureAPressed && Math.hypot(dx, dy) >= mGestureTouchSlop &&
-                                                                        Math.abs(dy) > Math.abs(dx) && dy < 0)
-                {
-                        mRightGestureAPressed = true;
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, ButtonType.WIIMOTE_BUTTON_A,
-                                                                ButtonState.PRESSED);
-                      mRightGestureStartX = x;
-                      mRightGestureStartY = y;
-                }
+                mRightGestureMoved = true;
+
+                int direction = getSwipeDirection(dx, dy);
+                if (direction == mRightGestureDirection)
+                        return;
+
+                int newAction = getGestureRightSwipeAction(direction);
+                switchGestureAction(false, newAction, direction);
         }
 
         private void handleGesturePointerUp(int pointerId)
         {
                 if (pointerId == mLeftGesturePointerId)
                 {
+                        handleGestureTapRelease(true);
                         releaseLeftGesture();
                 }
 
                 if (pointerId == mRightGesturePointerId)
                 {
+                        handleGestureTapRelease(false);
                         releaseRightGesture();
                 }
         }
 
-        private void releaseLeftGesture()
+        private void handleGestureTapRelease(boolean left)
         {
-                if (mLeftGestureDirection != GESTURE_DPAD_NONE)
+                int tapAction = left ? mLeftGestureTapAction : mRightGestureTapAction;
+                boolean moved = left ? mLeftGestureMoved : mRightGestureMoved;
+                if (tapAction != GESTURE_ACTION_NONE)
+                        releaseGestureAction(tapAction, GESTURE_DPAD_NONE);
+
+                if (moved)
+                        return;
+
+                long now = SystemClock.uptimeMillis();
+                long lastTapTime = left ? mLeftLastTapTime : mRightLastTapTime;
+                int doubleTapAction = left ? getGestureLeftDoubleTapAction() : getGestureRightDoubleTapAction();
+                if (doubleTapAction != GESTURE_ACTION_NONE && now - lastTapTime <= GESTURE_DOUBLE_TAP_WINDOW_MS)
                 {
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mLeftGestureDirection,
-                                                        ButtonState.RELEASED);
+                        triggerGesturePulse(doubleTapAction, GESTURE_DPAD_NONE);
                 }
 
+                if (left)
+                        mLeftLastTapTime = now;
+                else
+                        mRightLastTapTime = now;
+        }
+
+        private void releaseLeftGesture()
+        {
+                releaseGestureAction(mLeftGestureSwipeAction, mLeftGestureDirection);
+                mLeftGestureSwipeAction = GESTURE_ACTION_NONE;
                 mLeftGestureDirection = GESTURE_DPAD_NONE;
                 mLeftGesturePointerId = -1;
         }
 
         private void releaseRightGesture()
         {
-                if (mRightGestureBPressed)
-                {
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, ButtonType.WIIMOTE_BUTTON_B,
-                                                        ButtonState.RELEASED);
-                }
-
-                if (mRightGestureAPressed)
-                {
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, ButtonType.WIIMOTE_BUTTON_A,
-                                                                ButtonState.RELEASED);
-                }
-
-                mRightGestureBPressed = false;
-                mRightGestureAPressed = false;
+                releaseGestureAction(mRightGestureSwipeAction, mRightGestureDirection);
+                mRightGestureSwipeAction = GESTURE_ACTION_NONE;
+                mRightGestureDirection = GESTURE_DPAD_NONE;
                 mRightGesturePointerId = -1;
+        }
+
+        private void switchGestureAction(boolean left, int newAction, int direction)
+        {
+                if (left)
+                {
+                        releaseGestureAction(mLeftGestureSwipeAction, mLeftGestureDirection);
+                        mLeftGestureSwipeAction = newAction;
+                        mLeftGestureDirection = direction;
+                }
+                else
+                {
+                        releaseGestureAction(mRightGestureSwipeAction, mRightGestureDirection);
+                        mRightGestureSwipeAction = newAction;
+                        mRightGestureDirection = direction;
+                }
+
+                pressGestureAction(newAction, direction);
+        }
+
+        private int getSwipeDirection(float dx, float dy)
+        {
+                if (Math.abs(dx) > Math.abs(dy))
+                        return dx > 0 ? ButtonType.WIIMOTE_RIGHT : ButtonType.WIIMOTE_LEFT;
+                return dy > 0 ? ButtonType.WIIMOTE_DOWN : ButtonType.WIIMOTE_UP;
+        }
+
+        private int mapDirectionForSideways(int direction)
+        {
+                if (getConfiguredControllerType() != OVERLAY_WIIMOTE_SIDEWAYS)
+                        return direction;
+
+                switch (direction)
+                {
+                        case ButtonType.WIIMOTE_UP:
+                                return ButtonType.WIIMOTE_RIGHT;
+                        case ButtonType.WIIMOTE_RIGHT:
+                                return ButtonType.WIIMOTE_DOWN;
+                        case ButtonType.WIIMOTE_DOWN:
+                                return ButtonType.WIIMOTE_LEFT;
+                        case ButtonType.WIIMOTE_LEFT:
+                                return ButtonType.WIIMOTE_UP;
+                        default:
+                                return direction;
+                }
+        }
+
+        private int getGestureLeftTapAction()
+        {
+                return IntSetting.GESTURE_LEFT_TAP.getIntGlobal();
+        }
+
+        private int getGestureLeftDoubleTapAction()
+        {
+                return IntSetting.GESTURE_LEFT_DOUBLE_TAP.getIntGlobal();
+        }
+
+        private int getGestureRightTapAction()
+        {
+                return IntSetting.GESTURE_RIGHT_TAP.getIntGlobal();
+        }
+
+        private int getGestureRightDoubleTapAction()
+        {
+                return IntSetting.GESTURE_RIGHT_DOUBLE_TAP.getIntGlobal();
+        }
+
+        private int getGestureLeftSwipeAction(int direction)
+        {
+                switch (direction)
+                {
+                        case ButtonType.WIIMOTE_UP:
+                                return IntSetting.GESTURE_LEFT_SWIPE_UP.getIntGlobal();
+                        case ButtonType.WIIMOTE_DOWN:
+                                return IntSetting.GESTURE_LEFT_SWIPE_DOWN.getIntGlobal();
+                        case ButtonType.WIIMOTE_LEFT:
+                                return IntSetting.GESTURE_LEFT_SWIPE_LEFT.getIntGlobal();
+                        case ButtonType.WIIMOTE_RIGHT:
+                                return IntSetting.GESTURE_LEFT_SWIPE_RIGHT.getIntGlobal();
+                        default:
+                                return GESTURE_ACTION_NONE;
+                }
+        }
+
+        private int getGestureRightSwipeAction(int direction)
+        {
+                switch (direction)
+                {
+                        case ButtonType.WIIMOTE_UP:
+                                return IntSetting.GESTURE_RIGHT_SWIPE_UP.getIntGlobal();
+                        case ButtonType.WIIMOTE_DOWN:
+                                return IntSetting.GESTURE_RIGHT_SWIPE_DOWN.getIntGlobal();
+                        case ButtonType.WIIMOTE_LEFT:
+                                return IntSetting.GESTURE_RIGHT_SWIPE_LEFT.getIntGlobal();
+                        case ButtonType.WIIMOTE_RIGHT:
+                                return IntSetting.GESTURE_RIGHT_SWIPE_RIGHT.getIntGlobal();
+                        default:
+                                return GESTURE_ACTION_NONE;
+                }
+        }
+
+        private void pressGestureAction(int action, int direction)
+        {
+                if (action == GESTURE_ACTION_NONE)
+                        return;
+
+                if (action == GESTURE_ACTION_DPAD)
+                {
+                        int mapped = mapDirectionForSideways(direction);
+                        if (mapped != GESTURE_DPAD_NONE)
+                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                                                                ButtonState.PRESSED);
+                        return;
+                }
+
+                if (action == GESTURE_ACTION_STICK)
+                {
+                        setStickDirection(mapDirectionForSideways(direction));
+                        return;
+                }
+
+                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, action, ButtonState.PRESSED);
+        }
+
+        private void releaseGestureAction(int action, int direction)
+        {
+                if (action == GESTURE_ACTION_NONE)
+                        return;
+
+                if (action == GESTURE_ACTION_DPAD)
+                {
+                        int mapped = mapDirectionForSideways(direction);
+                        if (mapped != GESTURE_DPAD_NONE)
+                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                                                                ButtonState.RELEASED);
+                        return;
+                }
+
+                if (action == GESTURE_ACTION_STICK)
+                {
+                        resetStickDirection();
+                        return;
+                }
+
+                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, action, ButtonState.RELEASED);
+        }
+
+        private void triggerGesturePulse(int action, int direction)
+        {
+                if (action == GESTURE_ACTION_NONE)
+                        return;
+
+                if (action == GESTURE_ACTION_DPAD)
+                {
+                        int mapped = mapDirectionForSideways(direction);
+                        if (mapped == GESTURE_DPAD_NONE)
+                                return;
+                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                                                        ButtonState.PRESSED);
+                        postDelayed(() -> NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                                                        ButtonState.RELEASED), 50);
+                        return;
+                }
+
+                if (action == GESTURE_ACTION_STICK)
+                        return;
+
+                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, action, ButtonState.PRESSED);
+                postDelayed(() -> NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, action,
+                                                ButtonState.RELEASED), 50);
+        }
+
+        private void setStickDirection(int direction)
+        {
+                float x = 0f;
+                float y = 0f;
+
+                switch (direction)
+                {
+                        case ButtonType.WIIMOTE_UP:
+                                y = -1f;
+                                break;
+                        case ButtonType.WIIMOTE_DOWN:
+                                y = 1f;
+                                break;
+                        case ButtonType.WIIMOTE_LEFT:
+                                x = -1f;
+                                break;
+                        case ButtonType.WIIMOTE_RIGHT:
+                                x = 1f;
+                                break;
+                        default:
+                                break;
+                }
+
+                sendStickAxis(x, y);
+        }
+
+        private void resetStickDirection()
+        {
+                sendStickAxis(0f, 0f);
+        }
+
+        private void sendStickAxis(float x, float y)
+        {
+                float[] axes = new float[4];
+                axes[1] = Math.min(y, 1.0f);
+                axes[0] = Math.min(y, 0.0f);
+                axes[3] = Math.min(x, 1.0f);
+                axes[2] = Math.min(x, 0.0f);
+
+                int base = ButtonType.NUNCHUK_STICK;
+                for (int i = 0; i < 4; i++)
+                {
+                        NativeLibrary.onGamePadMoveEvent(NativeLibrary.TouchScreenDevice, base + 1 + i, axes[i]);
+                }
         }
 
   public boolean onTouchWhileEditing(MotionEvent event)
@@ -981,9 +1198,10 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
     }
   }
 
-  private void addWiimoteOverlayControls(String orientation)
-  {
-                boolean hideGestureButtons = isNsmbGestureProfileEnabled();
+        private void addWiimoteOverlayControls(String orientation)
+        {
+                boolean hideGestureButtons = isGestureProfileEnabled() &&
+                                                BooleanSetting.MAIN_GESTURE_HIDE_DEFAULT_BUTTONS.getBooleanGlobal();
     if (BooleanSetting.MAIN_BUTTON_TOGGLE_WII_0.getBooleanGlobal())
     {
       overlayButtons.add(initializeOverlayButton(getContext(), R.drawable.wiimote_a,
@@ -1234,7 +1452,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
         }
       }
     }
-                if (isNsmbGestureProfileEnabled())
+                if (isGestureProfileEnabled() &&
+                                                BooleanSetting.MAIN_GESTURE_AUTO_LAYOUT.getBooleanGlobal())
                 {
                         applyNsmbOverlayLayout();
                 }
