@@ -166,6 +166,7 @@ void VideoConfig::Refresh()
   fFSR1Sharpness = Config::Get(Config::GFX_ENHANCE_FSR1_SHARPNESS);
   
   // If FSR1 is enabled, override output resampling mode to use FSR
+  // This takes precedence over manually configured resampling modes
   if (bFSR1Enable)
   {
     output_resampling_mode = OutputResamplingMode::FSR;

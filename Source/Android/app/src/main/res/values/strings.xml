@@ -282,8 +282,8 @@ Without the correct bios file, the app may crash due to a bug that I can not fix
     <string name="enhancements_submenu">Enhancements</string>
     <string name="internal_resolution">Internal Resolution</string>
     <string name="internal_resolution_description">Specifies the resolution used to render at. A high resolution will improve visual quality a lot but is also quite heavy on performance and might cause glitches in certain games.</string>
-    <string name="fsr1_enable">FSR 1.0 Upscaling (Vulkan Only)</string>
-    <string name="fsr1_enable_description">Enables FidelityFX Super Resolution 1.0 upscaling. Improves visual quality when running at lower internal resolutions. Only works with Vulkan backend.</string>
+    <string name="fsr1_enable">FSR 1.0 Upscaling</string>
+    <string name="fsr1_enable_description">Enables FidelityFX Super Resolution 1.0 upscaling. Improves visual quality when running at lower internal resolutions by using advanced edge-adaptive upscaling and sharpening.</string>
     <string name="FSAA">Full-scene Anti-aliasing</string>
     <string name="FSAA_description">Reduces the amount of aliasing caused by rasterizing 3D graphics. This makes the rendered picture look less blocky. Heavily decreases emulation speed and sometimes causes issues.</string>
     <string name="anisotropic_filtering">Anisotropic Filtering</string>

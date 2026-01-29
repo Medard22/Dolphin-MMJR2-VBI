@@ -333,12 +333,12 @@ float4 LinearGammaCorrectedSample(float gamma)
 		color = BicubicSample(uvw, gamma, CUBIC_COEFF_GEN(0.0, 0.5));
 		
 		// Apply edge-adaptive sharpening (mimics FSR's RCAS)
+		// Sample direct neighbors without bicubic for proper edge detection
 		float2 texel_size = GetInvResolution();
-		float3 center_uvw = uvw;
-		float4 north = BicubicSample(float3(uvw.xy + float2(0.0, -texel_size.y), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
-		float4 south = BicubicSample(float3(uvw.xy + float2(0.0, texel_size.y), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
-		float4 east = BicubicSample(float3(uvw.xy + float2(texel_size.x, 0.0), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
-		float4 west = BicubicSample(float3(uvw.xy + float2(-texel_size.x, 0.0), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		float4 north = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(0.5, -0.5), uvw.z, gamma);
+		float4 south = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(0.5, 1.5), uvw.z, gamma);
+		float4 east = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(1.5, 0.5), uvw.z, gamma);
+		float4 west = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(-0.5, 0.5), uvw.z, gamma);
 		
 		// Compute local min/max for clamping
 		float4 minVal = min(min(min(north, south), min(east, west)), color);
