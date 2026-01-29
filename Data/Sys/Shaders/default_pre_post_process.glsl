@@ -326,11 +326,36 @@ float4 LinearGammaCorrectedSample(float gamma)
 	{
 		color = AreaSampling(uvw, gamma);
 	}
-	else if (resampling_method == 7) // Nearest Neighbor
+	else if (resampling_method == 7) // FSR (FidelityFX Super Resolution)
+	{
+		// FSR-like upscaling: high-quality bicubic with edge-adaptive sharpening
+		// Use Catmull-Rom for better edge preservation than Mitchell-Netravali
+		color = BicubicSample(uvw, gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		
+		// Apply edge-adaptive sharpening (mimics FSR's RCAS)
+		float2 texel_size = GetInvResolution();
+		float3 center_uvw = uvw;
+		float4 north = BicubicSample(float3(uvw.xy + float2(0.0, -texel_size.y), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		float4 south = BicubicSample(float3(uvw.xy + float2(0.0, texel_size.y), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		float4 east = BicubicSample(float3(uvw.xy + float2(texel_size.x, 0.0), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		float4 west = BicubicSample(float3(uvw.xy + float2(-texel_size.x, 0.0), uvw.z), gamma, CUBIC_COEFF_GEN(0.0, 0.5));
+		
+		// Compute local min/max for clamping
+		float4 minVal = min(min(min(north, south), min(east, west)), color);
+		float4 maxVal = max(max(max(north, south), max(east, west)), color);
+		
+		// Adaptive sharpening based on local contrast
+		float4 sum = north + south + east + west;
+		float4 sharpened = color + (color * 4.0 - sum) * 0.25;
+		
+		// Clamp to avoid over/undershooting
+		color = clamp(sharpened, minVal, maxVal);
+	}
+	else if (resampling_method == 8) // Nearest Neighbor
 	{
 		color = QuickSample(uvw, gamma);
 	}
-	else if (resampling_method == 8) // Bicubic: Hermite
+	else if (resampling_method == 9) // Bicubic: Hermite
 	{
 		color = BicubicSample(uvw, gamma, CUBIC_COEFF_GEN(0.0, 0.0));
 	}

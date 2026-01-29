@@ -12,8 +12,6 @@ add_library(videovulkan
   StateTracker.h
   VKBoundingBox.cpp
   VKBoundingBox.h
-  VKFSR1.cpp
-  VKFSR1.h
   VKMain.cpp
   VKPerfQuery.cpp
   VKPerfQuery.h

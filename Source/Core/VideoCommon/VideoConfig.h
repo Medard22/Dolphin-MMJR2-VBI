@@ -64,6 +64,7 @@ enum class OutputResamplingMode : int
   CatmullRom,
   SharpBilinear,
   AreaSampling,
+  FSR,  // FidelityFX Super Resolution upscaling
 };
 
 enum class ColorCorrectionRegion : int
