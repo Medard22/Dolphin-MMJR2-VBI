@@ -247,6 +247,20 @@ public final class TvMainActivity extends FragmentActivity
   {
     super.onActivityResult(requestCode, resultCode, result);
 
+    if (requestCode == PermissionsHandler.REQUEST_CODE_MANAGE_ALL_FILES_ACCESS)
+    {
+      if (PermissionsHandler.hasWriteAccess(this))
+      {
+        DirectoryInitialization.start(this);
+        GameFileCacheManager.startLoad();
+      }
+      else
+      {
+        Toast.makeText(this, R.string.write_permission_needed, Toast.LENGTH_LONG).show();
+      }
+      return;
+    }
+
     // If the user picked a file, as opposed to just backing out.
     if (resultCode == RESULT_OK)
     {

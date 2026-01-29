@@ -202,6 +202,21 @@ public final class MainActivity extends AppCompatActivity
   {
     super.onActivityResult(requestCode, resultCode, result);
 
+    if (requestCode == PermissionsHandler.REQUEST_CODE_MANAGE_ALL_FILES_ACCESS)
+    {
+      if (PermissionsHandler.hasWriteAccess(this))
+      {
+        DirectoryInitialization.start(this);
+        new AfterDirectoryInitializationRunner()
+                .runWithLifecycle(this, this::setPlatformTabsAndStartGameFileCacheService);
+      }
+      else
+      {
+        Toast.makeText(this, R.string.write_permission_needed, Toast.LENGTH_LONG).show();
+      }
+      return;
+    }
+
     // If the user picked a file, as opposed to just backing out.
     if (resultCode == RESULT_OK)
     {

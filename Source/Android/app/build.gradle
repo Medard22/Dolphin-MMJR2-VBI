@@ -43,7 +43,7 @@ android {
     defaultConfig {
         applicationId "org.dolphinemu.mmjr"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 34
 
         versionCode(getBuildVersionCode())
 
@@ -65,7 +65,12 @@ android {
     buildTypes {
         // Signed by release key, allowing for upload to Play Store.
         release {
-            signingConfig signingConfigs.release
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            } else {
+                // Fallback for local builds without a keystore (not for Play Store).
+                signingConfig signingConfigs.debug
+            }
 
             minifyEnabled true
             shrinkResources true
