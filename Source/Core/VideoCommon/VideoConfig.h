@@ -142,6 +142,8 @@ struct VideoConfig final
   bool bArbitraryMipmapDetection = false;
   float fArbitraryMipmapDetectionThreshold = 0;
   bool bHDR = false;
+  bool bFSR1Enable = false;
+  float fFSR1Sharpness = 0.5f;
 
   // Color Correction
   struct

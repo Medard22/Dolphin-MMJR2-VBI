@@ -8,7 +8,8 @@ public enum FloatSetting implements AbstractFloatSetting
   GFX_DISPLAY_SCALE(Settings.FILE_GFX, Settings.SECTION_GFX_SETTINGS,"DisplayScale", 1.0f),
   MAIN_EMULATION_SPEED(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "EmulationSpeed", 1.0f),
   MAIN_OVERCLOCK(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "Overclock", 1.0f),
-  GFX_CC_GAME_GAMMA(Settings.FILE_GFX, Settings.SECTION_GFX_COLOR_CORRECTION, "GameGamma", 2.35f);
+  GFX_CC_GAME_GAMMA(Settings.FILE_GFX, Settings.SECTION_GFX_COLOR_CORRECTION, "GameGamma", 2.35f),
+  GFX_ENHANCE_FSR1_SHARPNESS(Settings.FILE_GFX, Settings.SECTION_GFX_ENHANCEMENTS, "FSR1Sharpness", 0.5f);
 
   private final String mFile;
   private final String mSection;

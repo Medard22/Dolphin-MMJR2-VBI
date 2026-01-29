@@ -143,6 +143,8 @@ const Info<bool> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION{
 const Info<float> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION_THRESHOLD{
     {System::GFX, "Enhancements", "ArbitraryMipmapDetectionThreshold"}, 14.0f};
 const Info<bool> GFX_ENHANCE_HDR_OUTPUT{{System::GFX, "Enhancements", "HDROutput"}, false};
+const Info<bool> GFX_ENHANCE_FSR1_ENABLE{{System::GFX, "Enhancements", "FSR1Enable"}, false};
+const Info<float> GFX_ENHANCE_FSR1_SHARPNESS{{System::GFX, "Enhancements", "FSR1Sharpness"}, 0.5f};
 
 // Color.Correction
 
