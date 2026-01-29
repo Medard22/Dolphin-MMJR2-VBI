@@ -356,6 +356,8 @@ public final class SettingsFragmentPresenter
             R.string.gesture_controls_auto_layout, 0));
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_GESTURE_HIDE_DEFAULT_BUTTONS,
             R.string.gesture_controls_hide_buttons, 0));
+    sl.add(new IntSliderSetting(mContext, IntSetting.GESTURE_SWIPE_DEADZONE,
+            R.string.gesture_deadzone, 0, 0, 200, "px"));
 
     sl.add(new HeaderSetting(mContext, R.string.gesture_left_zone, 0));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_TAP,

@@ -312,6 +312,9 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
     boolean firstPointer = action != MotionEvent.ACTION_POINTER_DOWN &&
             action != MotionEvent.ACTION_POINTER_UP;
     int pointerIndex = firstPointer ? 0 : event.getActionIndex();
+    int activePointerId = event.getPointerId(pointerIndex);
+    boolean skipOverlayForPointer = isGestureProfileEnabled() &&
+            (activePointerId == mLeftGesturePointerId || activePointerId == mRightGesturePointerId);
     // Tracks if any button/joystick is pressed down
     boolean buttonPressed = false;
     boolean joystickPressed = false;
@@ -323,6 +326,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
       {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_POINTER_DOWN:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer enters the bounds of a button, press that button.
           if (button.getBounds()
                   .contains((int) event.getX(pointerIndex), (int) event.getY(pointerIndex)))
@@ -336,6 +341,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
           break;
         case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer ends, release the button it was pressing.
           if (button.getTrackId() == event.getPointerId(pointerIndex))
           {
@@ -356,6 +363,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
       {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_POINTER_DOWN:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer enters the bounds of a button, press that button.
           if (dpad.getBounds()
                   .contains((int) event.getX(pointerIndex), (int) event.getY(pointerIndex)))
@@ -364,6 +373,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
             buttonPressed = true;
           }
         case MotionEvent.ACTION_MOVE:
+                                        if (skipOverlayForPointer)
+                                                break;
           if (dpad.getTrackId() == event.getPointerId(pointerIndex))
           {
             // Up, Down, Left, Right
@@ -401,6 +412,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
           break;
         case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer ends, release the buttons.
           if (dpad.getTrackId() == event.getPointerId(pointerIndex))
           {
@@ -419,6 +432,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
 
     for (InputOverlayDrawableJoystick joystick : overlayJoysticks)
     {
+                        if (skipOverlayForPointer)
+                                break;
       if (joystick.TrackEvent(event))
       {
         if (joystick.getTrackId() != -1)
@@ -443,6 +458,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
       {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_POINTER_DOWN:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer enters the bounds of a hotkey, press that hotkey.
           if (hotkey.getBounds()
             .contains((int) event.getX(event.getActionIndex()), (int) event.getY(event.getActionIndex())))
@@ -454,6 +471,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
           break;
         case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
+                                        if (skipOverlayForPointer)
+                                                break;
           // If a pointer ends, release the button it was pressing.
           if (hotkey.getTrackId() == event.getPointerId(event.getActionIndex()))
           {
@@ -561,6 +580,15 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                                 return true;
                 }
 
+                for (InputOverlayDrawableHotkey hotkey : overlayHotkeys)
+                {
+                        if (hotkey.getBounds().contains(touchX, touchY))
+                                return true;
+                }
+
+                if (isGestureProfileEnabled())
+                        return false;
+
                 for (InputOverlayDrawableDpad dpad : overlayDpads)
                 {
                         if (dpad.getBounds().contains(touchX, touchY))
@@ -570,12 +598,6 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 for (InputOverlayDrawableJoystick joystick : overlayJoysticks)
                 {
                         if (joystick.getBounds().contains(touchX, touchY))
-                                return true;
-                }
-
-                for (InputOverlayDrawableHotkey hotkey : overlayHotkeys)
-                {
-                        if (hotkey.getBounds().contains(touchX, touchY))
                                 return true;
                 }
 
@@ -620,7 +642,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 float dx = x - mLeftGestureStartX;
                 float dy = y - mLeftGestureStartY;
 
-                if (!mLeftGestureMoved && Math.hypot(dx, dy) < mGestureTouchSlop)
+                int deadzone = mGestureTouchSlop + getGestureSwipeDeadzone();
+                if (!mLeftGestureMoved && Math.hypot(dx, dy) < deadzone)
                         return;
 
                 mLeftGestureMoved = true;
@@ -647,7 +670,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 float dx = x - mRightGestureStartX;
                 float dy = y - mRightGestureStartY;
 
-                if (!mRightGestureMoved && Math.hypot(dx, dy) < mGestureTouchSlop)
+                int deadzone = mGestureTouchSlop + getGestureSwipeDeadzone();
+                if (!mRightGestureMoved && Math.hypot(dx, dy) < deadzone)
                         return;
 
                 mRightGestureMoved = true;
@@ -740,25 +764,6 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                 return dy > 0 ? ButtonType.WIIMOTE_DOWN : ButtonType.WIIMOTE_UP;
         }
 
-        private int mapDirectionForSideways(int direction)
-        {
-                if (getConfiguredControllerType() != OVERLAY_WIIMOTE_SIDEWAYS)
-                        return direction;
-
-                switch (direction)
-                {
-                        case ButtonType.WIIMOTE_UP:
-                                return ButtonType.WIIMOTE_RIGHT;
-                        case ButtonType.WIIMOTE_RIGHT:
-                                return ButtonType.WIIMOTE_DOWN;
-                        case ButtonType.WIIMOTE_DOWN:
-                                return ButtonType.WIIMOTE_LEFT;
-                        case ButtonType.WIIMOTE_LEFT:
-                                return ButtonType.WIIMOTE_UP;
-                        default:
-                                return direction;
-                }
-        }
 
         private int getGestureLeftTapAction()
         {
@@ -778,6 +783,12 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
         private int getGestureRightDoubleTapAction()
         {
                 return IntSetting.GESTURE_RIGHT_DOUBLE_TAP.getIntGlobal();
+        }
+
+        private int getGestureSwipeDeadzone()
+        {
+                int deadzone = IntSetting.GESTURE_SWIPE_DEADZONE.getIntGlobal();
+                return Math.max(0, deadzone);
         }
 
         private int getGestureLeftSwipeAction(int direction)
@@ -821,16 +832,15 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
 
                 if (action == GESTURE_ACTION_DPAD)
                 {
-                        int mapped = mapDirectionForSideways(direction);
-                        if (mapped != GESTURE_DPAD_NONE)
-                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                        if (direction != GESTURE_DPAD_NONE)
+                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, direction,
                                                                 ButtonState.PRESSED);
                         return;
                 }
 
                 if (action == GESTURE_ACTION_STICK)
                 {
-                        setStickDirection(mapDirectionForSideways(direction));
+                        setStickDirection(direction);
                         return;
                 }
 
@@ -844,9 +854,8 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
 
                 if (action == GESTURE_ACTION_DPAD)
                 {
-                        int mapped = mapDirectionForSideways(direction);
-                        if (mapped != GESTURE_DPAD_NONE)
-                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                        if (direction != GESTURE_DPAD_NONE)
+                                NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, direction,
                                                                 ButtonState.RELEASED);
                         return;
                 }
@@ -867,12 +876,11 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
 
                 if (action == GESTURE_ACTION_DPAD)
                 {
-                        int mapped = mapDirectionForSideways(direction);
-                        if (mapped == GESTURE_DPAD_NONE)
+                        if (direction == GESTURE_DPAD_NONE)
                                 return;
-                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                        NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, direction,
                                                         ButtonState.PRESSED);
-                        postDelayed(() -> NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, mapped,
+                        postDelayed(() -> NativeLibrary.onGamePadEvent(NativeLibrary.TouchScreenDevice, direction,
                                                         ButtonState.RELEASED), 50);
                         return;
                 }

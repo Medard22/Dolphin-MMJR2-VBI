@@ -444,6 +444,7 @@ Without the correct bios file, the app may crash due to a bug that I can not fix
     <string name="gesture_controls_enable">Enable touch gestures</string>
     <string name="gesture_controls_auto_layout">Auto-align buttons</string>
     <string name="gesture_controls_hide_buttons">Hide 1/2 and D-pad buttons</string>
+    <string name="gesture_deadzone">Swipe deadzone</string>
     <string name="gesture_left_zone">Left zone</string>
     <string name="gesture_right_zone">Right zone</string>
     <string name="gesture_tap">Tap</string>

@@ -62,6 +62,8 @@ public enum IntSetting implements AbstractIntSetting
       "GestureRightSwipeLeft", 0),
     GESTURE_RIGHT_SWIPE_RIGHT(Settings.FILE_DOLPHIN, Settings.SECTION_INI_ANDROID_GESTURES,
       "GestureRightSwipeRight", 0),
+    GESTURE_SWIPE_DEADZONE(Settings.FILE_DOLPHIN, Settings.SECTION_INI_ANDROID_GESTURES,
+      "GestureSwipeDeadzone", 10),
 
   MAIN_DOUBLE_TAP_BUTTON(Settings.FILE_DOLPHIN, Settings.SECTION_INI_ANDROID_OVERLAY_BUTTONS,
           "DoubleTapButton",
