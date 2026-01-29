@@ -163,6 +163,8 @@ public class QuickSettingsFragment extends Fragment implements SettingsFragmentV
     // GFX Enhancements
     sl.add(new SliderSelectorSetting(context, IntSetting.GFX_EFB_SCALE, R.string.internal_resolution,
             0, 0, R.array.internalResolutionValues, "x", 0.01f));
+    sl.add(new CheckBoxSetting(context, BooleanSetting.GFX_ENHANCE_FSR1_ENABLE,
+            R.string.fsr1_enable, R.string.fsr1_enable_description));
 
     // GFX Hacks
     sl.add(new InvertedCheckBoxSetting(context, BooleanSetting.GFX_HACK_EFB_ACCESS_ENABLE,
