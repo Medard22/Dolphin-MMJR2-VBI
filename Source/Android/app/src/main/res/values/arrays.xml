@@ -164,6 +164,32 @@
         <item>Z</item>
         <item>Stick</item>
     </string-array>
+    <string-array name="gestureActionEntriesGameCube">
+        <item>None</item>
+        <item>A</item>
+        <item>B</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Start</item>
+        <item>R</item>
+        <item>D-pad</item>
+        <item>L</item>
+        <item>Z</item>
+        <item>Stick</item>
+    </string-array>
+    <string-array name="gestureActionEntriesClassic">
+        <item>None</item>
+        <item>A</item>
+        <item>B</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>+</item>
+        <item>−</item>
+        <item>D-pad</item>
+        <item>ZL</item>
+        <item>ZR</item>
+        <item>Stick</item>
+    </string-array>
     <integer-array name="gestureActionValues" translatable="false">
         <item>0</item>
         <item>100</item>

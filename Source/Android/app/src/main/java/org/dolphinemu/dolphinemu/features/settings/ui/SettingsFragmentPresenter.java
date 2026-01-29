@@ -44,6 +44,7 @@ import org.dolphinemu.dolphinemu.features.settings.model.view.StringSingleChoice
 import org.dolphinemu.dolphinemu.features.settings.model.view.SubmenuSetting;
 import org.dolphinemu.dolphinemu.features.settings.utils.SettingsFile;
 import org.dolphinemu.dolphinemu.model.AppTheme;
+import org.dolphinemu.dolphinemu.overlay.InputOverlay;
 import org.dolphinemu.dolphinemu.ui.main.MainPresenter;
 import org.dolphinemu.dolphinemu.utils.BooleanSupplier;
 import org.dolphinemu.dolphinemu.utils.EGLHelper;
@@ -349,6 +350,13 @@ public final class SettingsFragmentPresenter
 
   private void addGestureSettings(ArrayList<SettingsItem> sl)
   {
+                int controller = InputOverlay.getConfiguredControllerType(mContext);
+                int gestureEntries = R.array.gestureActionEntries;
+                if (controller == InputOverlay.OVERLAY_GAMECUBE)
+                        gestureEntries = R.array.gestureActionEntriesGameCube;
+                else if (controller == InputOverlay.OVERLAY_WIIMOTE_CLASSIC)
+                        gestureEntries = R.array.gestureActionEntriesClassic;
+
     sl.add(new HeaderSetting(mContext, R.string.gesture_submenu, 0));
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_GESTURE_CONTROLS,
             R.string.gesture_controls_enable, 0));
@@ -361,31 +369,31 @@ public final class SettingsFragmentPresenter
 
     sl.add(new HeaderSetting(mContext, R.string.gesture_left_zone, 0));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_TAP,
-            R.string.gesture_tap, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_tap, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_DOUBLE_TAP,
-            R.string.gesture_double_tap, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_double_tap, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_SWIPE_UP,
-            R.string.gesture_swipe_up, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_up, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_SWIPE_DOWN,
-            R.string.gesture_swipe_down, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_down, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_SWIPE_LEFT,
-            R.string.gesture_swipe_left, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_left, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_LEFT_SWIPE_RIGHT,
-            R.string.gesture_swipe_right, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_right, 0, gestureEntries, R.array.gestureActionValues));
 
     sl.add(new HeaderSetting(mContext, R.string.gesture_right_zone, 0));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_TAP,
-            R.string.gesture_tap, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_tap, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_DOUBLE_TAP,
-            R.string.gesture_double_tap, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_double_tap, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_SWIPE_UP,
-            R.string.gesture_swipe_up, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_up, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_SWIPE_DOWN,
-            R.string.gesture_swipe_down, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_down, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_SWIPE_LEFT,
-            R.string.gesture_swipe_left, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_left, 0, gestureEntries, R.array.gestureActionValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GESTURE_RIGHT_SWIPE_RIGHT,
-            R.string.gesture_swipe_right, 0, R.array.gestureActionEntries, R.array.gestureActionValues));
+            R.string.gesture_swipe_right, 0, gestureEntries, R.array.gestureActionValues));
   }
 
   private void addAudioSettings(ArrayList<SettingsItem> sl)
