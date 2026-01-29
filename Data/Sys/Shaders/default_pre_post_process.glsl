@@ -326,30 +326,54 @@ float4 LinearGammaCorrectedSample(float gamma)
 	{
 		color = AreaSampling(uvw, gamma);
 	}
-	else if (resampling_method == 7) // FSR (FidelityFX Super Resolution)
+	else if (resampling_method == 7) // FSR (FidelityFX Super Resolution) - Mobile Optimized
 	{
-		// FSR-like upscaling: high-quality bicubic with edge-adaptive sharpening
-		// Use Catmull-Rom for better edge preservation than Mitchell-Netravali
-		color = BicubicSample(uvw, gamma, CUBIC_COEFF_GEN(0.0, 0.5));
-		
-		// Apply edge-adaptive sharpening (mimics FSR's RCAS)
-		// Sample direct neighbors without bicubic for proper edge detection
-		float2 texel_size = GetInvResolution();
-		float4 north = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(0.5, -0.5), uvw.z, gamma);
-		float4 south = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(0.5, 1.5), uvw.z, gamma);
-		float4 east = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(1.5, 0.5), uvw.z, gamma);
-		float4 west = QuickSampleByPixel(floor(uvw.xy * GetResolution()) + float2(-0.5, 0.5), uvw.z, gamma);
-		
-		// Compute local min/max for clamping
-		float4 minVal = min(min(min(north, south), min(east, west)), color);
-		float4 maxVal = max(max(max(north, south), max(east, west)), color);
-		
-		// Adaptive sharpening based on local contrast
-		float4 sum = north + south + east + west;
-		float4 sharpened = color + (color * 4.0 - sum) * 0.25;
-		
-		// Clamp to avoid over/undershooting
-		color = clamp(sharpened, minVal, maxVal);
+		float2 src_size = GetResolution();
+		float2 dst_size = GetTargetResolution();
+		bool is_upscale = (dst_size.x > src_size.x) || (dst_size.y > src_size.y);
+
+		if (!is_upscale)
+		{
+			// FSR is designed for upscaling. When downscaling, use bilinear.
+			color = BilinearSample(uvw, gamma);
+		}
+		else
+		{
+			// FSR-like upscaling optimized for mobile
+			float sharpness = clamp(fsr1_sharpness, 0.0, 1.0);
+			
+			if (sharpness < 0.01)
+			{
+				// No sharpening - just use HW bilinear (fastest path)
+				color = texture(samp0, uvw);
+				color.rgb = pow(color.rgb, float3(gamma));
+			}
+			else
+			{
+				// Sharpening enabled - use optimized CAS-like algorithm
+				// Work in gamma space to avoid expensive pow() on neighbors
+				float2 texel = 1.0 / src_size;
+				
+				// Sample center and 4 neighbors using HW bilinear (gamma space)
+				float4 center = texture(samp0, uvw);
+				float4 north = texture(samp0, uvw + float3(0.0, -texel.y, 0.0));
+				float4 south = texture(samp0, uvw + float3(0.0, texel.y, 0.0));
+				float4 east = texture(samp0, uvw + float3(texel.x, 0.0, 0.0));
+				float4 west = texture(samp0, uvw + float3(-texel.x, 0.0, 0.0));
+				
+				// CAS-style sharpening in gamma space (faster, visually similar)
+				float4 sum = north + south + east + west;
+				float4 sharpened = center + (center * 4.0 - sum) * (0.25 * sharpness);
+				
+				// Soft clamp in gamma space
+				float4 minVal = min(min(north, south), min(east, west));
+				float4 maxVal = max(max(north, south), max(east, west));
+				color = clamp(sharpened, minVal, maxVal);
+				
+				// Convert to linear only once at the end
+				color.rgb = pow(color.rgb, float3(gamma));
+			}
+		}
 	}
 	else if (resampling_method == 8) // Nearest Neighbor
 	{

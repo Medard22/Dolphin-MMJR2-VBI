@@ -22,9 +22,11 @@ import org.dolphinemu.dolphinemu.features.settings.model.Settings;
 import org.dolphinemu.dolphinemu.features.settings.model.view.SliderSelectorSetting;
 
 import org.dolphinemu.dolphinemu.features.settings.model.BooleanSetting;
+import org.dolphinemu.dolphinemu.features.settings.model.FloatSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.IntSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.view.CheckBoxSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.view.InvertedCheckBoxSetting;
+import org.dolphinemu.dolphinemu.features.settings.model.view.PercentSliderSetting;
 import org.dolphinemu.dolphinemu.features.settings.model.view.SettingsItem;
 import org.dolphinemu.dolphinemu.ui.DividerItemDecoration;
 
@@ -165,6 +167,8 @@ public class QuickSettingsFragment extends Fragment implements SettingsFragmentV
             0, 0, R.array.internalResolutionValues, "x", 0.01f));
     sl.add(new CheckBoxSetting(context, BooleanSetting.GFX_ENHANCE_FSR1_ENABLE,
             R.string.fsr1_enable, R.string.fsr1_enable_description));
+        sl.add(new PercentSliderSetting(context, FloatSetting.GFX_ENHANCE_FSR1_SHARPNESS,
+          R.string.fsr1_sharpness, R.string.fsr1_sharpness_description, 0, 100, "%"));
 
     // GFX Hacks
     sl.add(new InvertedCheckBoxSetting(context, BooleanSetting.GFX_HACK_EFB_ACCESS_ENABLE,

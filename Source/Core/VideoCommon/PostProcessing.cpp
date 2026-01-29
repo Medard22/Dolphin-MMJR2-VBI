@@ -631,6 +631,7 @@ std::string PostProcessing::GetUniformBufferHeader(bool user_post_process) const
   ss << "  int game_color_space;\n";
   ss << "  int correct_gamma;\n";
   ss << "  float game_gamma;\n";
+  ss << "  float fsr1_sharpness;\n";
   ss << "  int sdr_display_gamma_sRGB;\n";
   ss << "  float sdr_display_custom_gamma;\n";
   ss << "  int linear_space_output;\n";
@@ -850,6 +851,7 @@ struct BuiltinUniforms
   s32 game_color_space;
   s32 correct_gamma;
   float game_gamma;
+  float fsr1_sharpness;
   s32 sdr_display_gamma_sRGB;
   float sdr_display_custom_gamma;
   s32 linear_space_output;
@@ -902,6 +904,7 @@ void PostProcessing::FillUniformBuffer(const MathUtil::Rectangle<int>& src,
       static_cast<int>(g_ActiveConfig.color_correction.game_color_space);
   builtin_uniforms.correct_gamma = g_ActiveConfig.color_correction.bCorrectGamma;
   builtin_uniforms.game_gamma = g_ActiveConfig.color_correction.fGameGamma;
+  builtin_uniforms.fsr1_sharpness = g_ActiveConfig.fFSR1Sharpness;
   builtin_uniforms.sdr_display_gamma_sRGB = g_ActiveConfig.color_correction.bSDRDisplayGammaSRGB;
   builtin_uniforms.sdr_display_custom_gamma =
       g_ActiveConfig.color_correction.fSDRDisplayCustomGamma;
