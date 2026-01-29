@@ -339,40 +339,10 @@ float4 LinearGammaCorrectedSample(float gamma)
 		}
 		else
 		{
-			// FSR-like upscaling optimized for mobile
-			float sharpness = clamp(fsr1_sharpness, 0.0, 1.0);
-			
-			if (sharpness < 0.01)
-			{
-				// No sharpening - just use HW bilinear (fastest path)
-				color = texture(samp0, uvw);
-				color.rgb = pow(color.rgb, float3(gamma));
-			}
-			else
-			{
-				// Sharpening enabled - use optimized CAS-like algorithm
-				// Work in gamma space to avoid expensive pow() on neighbors
-				float2 texel = 1.0 / src_size;
-				
-				// Sample center and 4 neighbors using HW bilinear (gamma space)
-				float4 center = texture(samp0, uvw);
-				float4 north = texture(samp0, uvw + float3(0.0, -texel.y, 0.0));
-				float4 south = texture(samp0, uvw + float3(0.0, texel.y, 0.0));
-				float4 east = texture(samp0, uvw + float3(texel.x, 0.0, 0.0));
-				float4 west = texture(samp0, uvw + float3(-texel.x, 0.0, 0.0));
-				
-				// CAS-style sharpening in gamma space (faster, visually similar)
-				float4 sum = north + south + east + west;
-				float4 sharpened = center + (center * 4.0 - sum) * (0.25 * sharpness);
-				
-				// Soft clamp in gamma space
-				float4 minVal = min(min(north, south), min(east, west));
-				float4 maxVal = max(max(north, south), max(east, west));
-				color = clamp(sharpened, minVal, maxVal);
-				
-				// Convert to linear only once at the end
-				color.rgb = pow(color.rgb, float3(gamma));
-			}
+			// Ultra-fast path: single HW bilinear sample
+			// (Use this to verify performance; sharpening is disabled here.)
+			color = texture(samp0, uvw);
+			color.rgb = pow(color.rgb, float3(gamma));
 		}
 	}
 	else if (resampling_method == 8) // Nearest Neighbor

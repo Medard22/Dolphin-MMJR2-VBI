@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.dolphinemu.dolphinemu.R;
 import org.dolphinemu.dolphinemu.activities.EmulationActivity;
+import org.dolphinemu.dolphinemu.NativeLibrary;
 import org.dolphinemu.dolphinemu.features.settings.model.Settings;
 import org.dolphinemu.dolphinemu.features.settings.model.view.SliderSelectorSetting;
 
@@ -130,7 +131,12 @@ public class QuickSettingsFragment extends Fragment implements SettingsFragmentV
   public void onSettingChanged()
   {
     if (mActivity != null)
+    {
+      // Persist quick settings immediately and reload config while emulating
+      mActivity.getSettings().saveSettings(null, null);
+      NativeLibrary.ReloadConfig();
       mActivity.refreshHotkeyOverlay();
+    }
   }
 
   @Override
