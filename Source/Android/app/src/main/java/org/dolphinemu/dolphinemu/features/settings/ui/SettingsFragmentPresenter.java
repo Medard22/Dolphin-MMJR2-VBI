@@ -774,6 +774,10 @@ public final class SettingsFragmentPresenter
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_EFB_SCALE, R.string.internal_resolution,
             R.string.internal_resolution_description, R.array.internalResolutionEntries,
             R.array.internalResolutionValues));
+    sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_ENHANCE_FSR1_ENABLE,
+            R.string.fsr1_enable, R.string.fsr1_enable_description));
+    sl.add(new PercentSliderSetting(mContext, FloatSetting.GFX_ENHANCE_FSR1_SHARPNESS,
+            R.string.fsr1_sharpness, R.string.fsr1_sharpness_description, 0, 100, "%"));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_MSAA, R.string.FSAA,
             R.string.FSAA_description, R.array.FSAAEntries, R.array.FSAAValues));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_ENHANCE_MAX_ANISOTROPY,

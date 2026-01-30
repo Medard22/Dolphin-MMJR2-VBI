@@ -240,12 +240,13 @@ const std::vector<std::unique_ptr<VideoBackendBase>>& VideoBackendBase::GetAvail
     backends.push_back(std::make_unique<OGL::VideoBackend>());
 #endif
 #ifdef HAS_VULKAN
-#ifdef __APPLE__
-    // Emplace the Vulkan backend at the beginning so it takes precedence over OpenGL.
-    // On macOS, we prefer Vulkan over OpenGL due to OpenGL support being deprecated by Apple.
-    backends.emplace(backends.begin(), std::make_unique<Vulkan::VideoBackend>());
+#if defined(__APPLE__) || defined(ANDROID)
+  // Emplace the Vulkan backend at the beginning so it takes precedence over OpenGL.
+  // On macOS, we prefer Vulkan over OpenGL due to OpenGL support being deprecated by Apple.
+  // On Android, prefer Vulkan as the default graphics backend.
+  backends.emplace(backends.begin(), std::make_unique<Vulkan::VideoBackend>());
 #else
-    backends.push_back(std::make_unique<Vulkan::VideoBackend>());
+  backends.push_back(std::make_unique<Vulkan::VideoBackend>());
 #endif
 #endif
 #ifdef __APPLE__
