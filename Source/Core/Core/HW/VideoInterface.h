@@ -383,6 +383,7 @@ public:
   double GetTargetRefreshRate() const;
   u32 GetTargetRefreshRateNumerator() const;
   u32 GetTargetRefreshRateDenominator() const;
+  // Returns true when the 60Hz-to-30fps half-rate output hack should be active.
   bool ShouldOutputHalfRate() const;
 
   u32 GetTicksPerSample() const;
@@ -441,7 +442,9 @@ private:
   u64 m_ticks_last_line_start = 0;  // number of ticks when the current full scanline started
   u32 m_half_line_count = 0;        // number of halflines that have occurred for this full frame
   u32 m_half_line_of_next_si_poll = 0;  // halfline when next SI poll results should be available
+  // Tracks whether half-rate output is active for this title.
   bool m_output_half_rate = false;
+  // Tracks whether the next VI field should be presented while half-rate is active.
   bool m_should_output_field = true;
 
   // below indexes are 0-based
