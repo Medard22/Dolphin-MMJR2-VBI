@@ -1,6 +1,13 @@
-# Dolphin MMJR2 - VBI Fork
+# Dolphin MMJR2 Mobile FSR
 
 This is a personal fork of Dolphin MMJR2. Initially, the goal of this fork was to implement Sam Belliveau's VBI Skip speed hack into the MMJR2 codebase, but has since grown into a semi-actively maintained project. My primary focus is preserving the older MMJR2 user interface, which I find more intuitive and user-friendly, and support for fractional scaling while integrating features and fixes from the upstream Dolphin repository.
+
+## Project Focus (Android)
+- Android-only focus.
+- FSR upscaling support to improve visual quality when running at low internal resolutions.
+- Touch gestures to improve mobile gameplay.
+- Future work: create and refine game-specific control layouts.
+- Performance improvements whenever possible.
 
 ## Disclaimer
 - **WARNING**: This fork is based on older source code! It may introduce bugs of its own and the support I can give is very limited. If you are new to emulation or prefer stability, please use [Official Dolphin](https://dolphin-emu.org/).
@@ -46,6 +53,8 @@ A huge thank you to:
 - **Original MMJR and MMJR2 Developers**: For creating and maintaining these forks.
 - **Lumince**: For keeping MMJR2 alive and well for so long and letting me continue their work.
 - **Sam Belliveau**: For the VBI Skip speed hack that started this whole mess.
+
+If you use this repo or create a derivative, please credit Dolphin, Dolphin MMJR2, and any upstream forks this repo is based on.
 
 ## Last Notes
 I work on this fork in my spare time and while I wouldn´t call myself a developer, it is a fun way to learn code and app development.
