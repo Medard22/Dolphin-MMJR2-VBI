@@ -147,7 +147,12 @@ void VideoConfig::Refresh()
   bBackendMultithreading = Config::Get(Config::GFX_BACKEND_MULTITHREADING);
   iCommandBufferExecuteInterval = Config::Get(Config::GFX_COMMAND_BUFFER_EXECUTE_INTERVAL);
   bShaderCache = Config::Get(Config::GFX_SHADER_CACHE);
+#ifdef ANDROID
+  // Waiting for shaders before starting causes ANR on Android due to blocking the main thread
+  bWaitForShadersBeforeStarting = false;
+#else
   bWaitForShadersBeforeStarting = Config::Get(Config::GFX_WAIT_FOR_SHADERS_BEFORE_STARTING);
+#endif
   iShaderCompilationMode = Config::Get(Config::GFX_SHADER_COMPILATION_MODE);
   iShaderCompilerThreads = Config::Get(Config::GFX_SHADER_COMPILER_THREADS);
   iShaderPrecompilerThreads = Config::Get(Config::GFX_SHADER_PRECOMPILER_THREADS);

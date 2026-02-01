@@ -67,6 +67,7 @@ public final class DirectoryInitialization
         {
           initializeInternalStorage(context);
           boolean wiimoteIniWritten = initializeExternalStorage(context);
+          initializeCrashLogging(context);
           NativeLibrary.Initialize();
           NativeLibrary.ReportStartToAnalytics();
 
@@ -153,6 +154,21 @@ public final class DirectoryInitialization
 
     // Let the native code know where the Sys directory is.
     SetSysDirectory(sysDirectory.getPath());
+  }
+
+  private static void initializeCrashLogging(Context context)
+  {
+    if (userPath == null)
+      return;
+
+    File logsDir = new File(userPath, "Logs");
+    if (!logsDir.exists())
+      //noinspection ResultOfMethodCallIgnored
+      logsDir.mkdirs();
+
+    File crashLog = new File(logsDir, "crash.log");
+    NativeLibrary.InstallCrashHandler(crashLog.getAbsolutePath());
+    CrashLogger.install(context, userPath);
   }
 
   // Returns whether the WiimoteNew.ini file was written to

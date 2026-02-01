@@ -45,6 +45,8 @@ public enum BooleanSetting implements AbstractBooleanSetting
   MAIN_FAST_DISC_SPEED(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "FastDiscSpeed", false),
   MAIN_OVERCLOCK_ENABLE(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "OverclockEnable", false),
   MAIN_AUTO_DISC_CHANGE(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "AutoDiscChange", false),
+  MAIN_HALF_RATE_60HZ_LOGIC(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE,
+          "HalfRate60HzLogic", false),
   MAIN_ALLOW_SD_WRITES(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "WiiSDCardAllowWrites",
           true),
   MAIN_ENABLE_SAVESTATES(Settings.FILE_DOLPHIN, Settings.SECTION_INI_CORE, "EnableSaveStates",

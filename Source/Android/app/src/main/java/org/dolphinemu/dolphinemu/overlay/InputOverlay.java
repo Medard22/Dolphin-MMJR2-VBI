@@ -594,9 +594,6 @@ public final class InputOverlay extends SurfaceView implements OnTouchListener
                                 return true;
                 }
 
-                if (isGestureProfileEnabled())
-                        return false;
-
                 for (InputOverlayDrawableDpad dpad : overlayDpads)
                 {
                         if (dpad.getBounds().contains(touchX, touchY))

@@ -304,6 +304,11 @@ public final class SettingsFragmentPresenter
             R.string.auto_disc_change, 0));
     sl.add(new PercentSliderSetting(mContext, FloatSetting.MAIN_EMULATION_SPEED,
             R.string.speed_limit, 0, 0, 200, "%"));
+    if (mSettings.isGameSpecific())
+    {
+      sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_HALF_RATE_60HZ_LOGIC,
+              R.string.half_rate_60hz_logic, R.string.half_rate_60hz_logic_description));
+    }
     sl.add(new CheckBoxSetting(mContext, BooleanSetting.MAIN_ENABLE_CHEATS, R.string.enable_cheats,
             0));
     sl.add(new SingleChoiceSetting(mContext, IntSetting.MAIN_FALLBACK_REGION,
@@ -747,8 +752,7 @@ public final class SettingsFragmentPresenter
             R.array.shaderCompilationModeEntries, R.array.shaderCompilationModeValues,
             R.array.shaderCompilationDescriptionEntries,
             R.array.shaderCompilationDescriptionValues));
-    sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_WAIT_FOR_SHADERS_BEFORE_STARTING,
-            R.string.wait_for_shaders, R.string.wait_for_shaders_description));
+    // "Compile Shaders Before Starting" removed: causes ANR on Android due to blocking main thread
     sl.add(new SingleChoiceSetting(mContext, IntSetting.GFX_ASPECT_RATIO, R.string.aspect_ratio, 0,
             R.array.aspectRatioEntries, R.array.aspectRatioValues));
     sl.add(new PercentSliderSetting(mContext, FloatSetting.GFX_DISPLAY_SCALE, R.string.setting_display_scale,

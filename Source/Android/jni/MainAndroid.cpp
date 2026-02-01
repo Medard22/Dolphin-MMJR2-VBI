@@ -66,6 +66,7 @@
 #include "VideoCommon/VideoBackendBase.h"
 
 #include "jni/AndroidCommon/AndroidCommon.h"
+#include "jni/AndroidCommon/CrashLogger.h"
 #include "jni/AndroidCommon/IDCache.h"
 #include "jni/AndroidCommon/AndroidHotkey.h"
 #include "jni/AndroidCommon/AndroidTheme.h"
@@ -602,6 +603,13 @@ Java_org_dolphinemu_dolphinemu_NativeLibrary_UpdateGCAdapterScanThread(JNIEnv*, 
   {
     GCAdapter::StopScanThread();
   }
+}
+
+JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_InstallCrashHandler(
+    JNIEnv* env, jclass, jstring j_log_path)
+{
+  const std::string log_path = GetJString(env, j_log_path);
+  AndroidCommon::InstallCrashHandler(log_path);
 }
 
 JNIEXPORT void JNICALL Java_org_dolphinemu_dolphinemu_NativeLibrary_Initialize(JNIEnv*, jclass)
