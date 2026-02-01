@@ -164,6 +164,9 @@ void ShaderCache::WaitForAsyncCompiler()
 {
   bool running = true;
 
+  // On Android the graphics surface may not be ready yet, skip UI progress updates if headless
+  const bool can_present = g_gfx && !g_gfx->IsHeadless() && g_presenter;
+
   constexpr auto update_ui_progress = [](size_t completed, size_t total) {
     const float center_x = ImGui::GetIO().DisplaySize.x * 0.5f;
     const float center_y = ImGui::GetIO().DisplaySize.y * 0.5f;
@@ -187,16 +190,22 @@ void ShaderCache::WaitForAsyncCompiler()
     g_presenter->Present();
   };
 
+  auto noop_progress = [](size_t, size_t) {};
+
   while (running &&
          (m_async_shader_compiler->HasPendingWork() || m_async_shader_compiler->HasCompletedWork()))
   {
-    running = m_async_shader_compiler->WaitUntilCompletion(update_ui_progress);
+    if (can_present)
+      running = m_async_shader_compiler->WaitUntilCompletion(update_ui_progress);
+    else
+      running = m_async_shader_compiler->WaitUntilCompletion(noop_progress);
 
     m_async_shader_compiler->RetrieveWorkItems();
   }
 
   // An extra Present to clear the screen
-  g_presenter->Present();
+  if (can_present)
+    g_presenter->Present();
 }
 
 template <typename SerializedUidType, typename UidType>

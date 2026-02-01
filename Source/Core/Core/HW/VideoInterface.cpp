@@ -49,6 +49,14 @@ static constexpr std::array<u32, 2> CLOCK_FREQUENCIES{{
 }};
 
 static constexpr u32 NUM_HALF_LINES_FOR_SI_POLL = (7 * 2) + 1;  // this is how long an SI poll takes
+static constexpr double HALF_RATE_FPS_THRESHOLD = 55.0;  // 60Hz titles with margin for drift.
+
+static double CalculateRefreshRate(u32 ticks_per_second, u32 ticks_even_field, u32 ticks_odd_field)
+{
+  const u32 numerator = ticks_per_second * 2;
+  const u32 denominator = ticks_even_field + ticks_odd_field;
+  return static_cast<double>(numerator) / denominator;
+}
 
 void VideoInterfaceManager::DoState(PointerWrap& p)
 {
@@ -81,6 +89,8 @@ void VideoInterfaceManager::DoState(PointerWrap& p)
   p.Do(m_ticks_last_line_start);
   p.Do(m_half_line_count);
   p.Do(m_half_line_of_next_si_poll);
+  p.Do(m_output_half_rate);
+  p.Do(m_should_output_field);
   p.Do(m_even_field_first_hl);
   p.Do(m_odd_field_first_hl);
   p.Do(m_even_field_last_hl);
@@ -166,6 +176,8 @@ void VideoInterfaceManager::Preset(bool _bNTSC)
   m_ticks_last_line_start = 0;
   m_half_line_count = 0;
   m_half_line_of_next_si_poll = NUM_HALF_LINES_FOR_SI_POLL;  // first sampling starts at vsync
+  m_output_half_rate = false;
+  m_should_output_field = true;
 
   UpdateParameters();
 }
@@ -687,6 +699,10 @@ float VideoInterfaceManager::GetAspectRatio() const
 
 void VideoInterfaceManager::UpdateParameters()
 {
+  const bool output_half_rate = ShouldOutputHalfRate();
+  if (output_half_rate && !m_output_half_rate)
+    m_should_output_field = true;
+  m_output_half_rate = output_half_rate;
   u32 equ_hl = 3 * m_vertical_timing_register.EQU;
   u32 acv_hl = 2 * m_vertical_timing_register.ACV;
   m_odd_field_first_hl = equ_hl + m_vblank_timing_odd.PRB;
@@ -697,8 +713,12 @@ void VideoInterfaceManager::UpdateParameters()
 
   m_target_refresh_rate_numerator = m_system.GetSystemTimers().GetTicksPerSecond() * 2;
   m_target_refresh_rate_denominator = GetTicksPerEvenField() + GetTicksPerOddField();
-  m_target_refresh_rate =
-      static_cast<double>(m_target_refresh_rate_numerator) / m_target_refresh_rate_denominator;
+  if (m_output_half_rate)
+    m_target_refresh_rate_denominator *= 2;
+  m_target_refresh_rate = CalculateRefreshRate(m_system.GetSystemTimers().GetTicksPerSecond(),
+                                               GetTicksPerEvenField(), GetTicksPerOddField());
+  if (m_output_half_rate)
+    m_target_refresh_rate /= 2.0;
 }
 
 double VideoInterfaceManager::GetTargetRefreshRate() const
@@ -714,6 +734,16 @@ u32 VideoInterfaceManager::GetTargetRefreshRateNumerator() const
 u32 VideoInterfaceManager::GetTargetRefreshRateDenominator() const
 {
   return m_target_refresh_rate_denominator;
+}
+
+bool VideoInterfaceManager::ShouldOutputHalfRate() const
+{
+  const double refresh_rate = CalculateRefreshRate(m_system.GetSystemTimers().GetTicksPerSecond(),
+                                                   GetTicksPerEvenField(), GetTicksPerOddField());
+  const double fps = refresh_rate / (m_display_control_register.NIN ? 2.0 : 1.0);
+
+  return Config::Get(Config::MAIN_HALF_RATE_60HZ_LOGIC) && fps > HALF_RATE_FPS_THRESHOLD &&
+         !m_system.GetFifoPlayer().IsRunningWithFakeVideoInterfaceUpdates();
 }
 
 u32 VideoInterfaceManager::GetTicksPerSample() const
@@ -757,6 +787,8 @@ void VideoInterfaceManager::LogField(FieldType field, u32 xfb_address) const
 
 void VideoInterfaceManager::OutputField(FieldType field, u64 ticks)
 {
+  if (m_output_half_rate && !m_should_output_field)
+    return;
   // Could we fit a second line of data in the stride?
   // (Datel's Wii FreeLoaders are the only titles known to set WPL to 0)
   bool potentially_interlaced_xfb =
@@ -838,6 +870,9 @@ void VideoInterfaceManager::EndField(FieldType field, u64 ticks)
   // Currently, this is only known to be necessary to eliminate flickering in WWE Crush Hour.
   if (!Config::Get(Config::GFX_HACK_EARLY_XFB_OUTPUT))
     OutputField(field, ticks);
+
+  if (m_output_half_rate)
+    m_should_output_field = !m_should_output_field;
 
   g_perf_metrics.CountVBlank();
   VIEndFieldEvent::Trigger();

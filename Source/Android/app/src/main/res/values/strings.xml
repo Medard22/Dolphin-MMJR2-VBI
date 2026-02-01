@@ -128,6 +128,8 @@
     <string name="dual_core_description">Split workload to two CPU cores instead of one. Increases speed.</string>
     <string name="enable_cheats">Enable Cheats</string>
     <string name="speed_limit">Speed Limit (0% = Unlimited)</string>
+    <string name="half_rate_60hz_logic">Half-rate 60Hz output (30 fps)</string>
+    <string name="half_rate_60hz_logic_description">Per-game hack that outputs every other field to target 30 fps while keeping game logic at 60 Hz. Use for 60 Hz titles on limited hardware. May cause visual stutter or timing issues.</string>
     <string name="skip_on_skip_idle">Sync GPU on Skip Idle Hack</string>
     <string name="skip_on_skip_idle_description">Sync the emulated CPU with the GPU when skipping idle cycles. Disabling this is mostly safe, but might cause weird bugs or crash since CPU and GPU are not always synchronized. To avoid audio crackling, be sure to disable Audio Stretching.</string>
     <string name="jit_follow_branch">JIT Follow Branch</string>

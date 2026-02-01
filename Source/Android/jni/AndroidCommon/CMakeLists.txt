@@ -1,4 +1,6 @@
 add_library(androidcommon STATIC
+  CrashLogger.cpp
+  CrashLogger.h
   AndroidCommon.cpp
   AndroidCommon.h
   IDCache.cpp

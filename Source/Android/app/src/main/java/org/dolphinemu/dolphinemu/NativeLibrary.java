@@ -398,6 +398,11 @@ public final class NativeLibrary
   public static native void Initialize();
 
   /**
+   * Installs a native crash handler that writes a log to the given path.
+   */
+  public static native void InstallCrashHandler(String logPath);
+
+  /**
    * Tells analytics that Dolphin has been started.
    *
    * Since users typically don't explicitly close Android apps, it's appropriate to
